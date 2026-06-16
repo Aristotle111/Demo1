@@ -72,7 +72,7 @@ const App = () => {
   const [currentLanguage, setCurrentLanguage] = useState("EN");
   const [difficulty, setDifficulty] = useState("Beginner");
 
-  const handleLanguageChange = (selectedLang) => {
+  const handleLanguageChange = (selectedLang : string) => {
     setCurrentLanguage(selectedLang);
   };
   
@@ -91,8 +91,7 @@ const App = () => {
             buttonBgColor="#3f3f3f"
             buttonTextColor="#000000"
             ease="power3.out"
-            theme="light"
-            onItemClick={(index) => setActiveIndex(index)}
+            onItemClick={(index : any) => setActiveIndex(index)}
             defaultOpen={true}
           />
         </div>
@@ -159,7 +158,7 @@ const App = () => {
           <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-auto bg-black/20 backdrop-blur-sm rounded-2xl px-4 py-2 border border-zinc-800/40 shadow-2xl animate-fade-in">
             <GooeyNav 
               items={["Beginner", "Intermediate", "Advanced"]}
-              onChange={(selected) => setDifficulty(selected)}
+              onChange={(selected : any) => setDifficulty(selected)}
             />
           </div>
         )}

@@ -3,8 +3,14 @@
 import { useRef, useEffect, useState } from 'react';
 import './GooeyNav.css';
 
+/**
+ * @param {Object} props
+ * @param {(string | {label: string, href?: string})[]} [props.items]
+ * @param {Function} [props.onChange]
+ */
+
 const GooeyNav = ({
-  items = [], // Expected: Array of strings like ["Beginner", "Intermediate", "Advanced"] or objects [{label, href}]
+  items = [],
   animationTime = 600,
   particleCount = 15,
   particleDistances = [90, 10],
@@ -12,7 +18,7 @@ const GooeyNav = ({
   timeVariance = 300,
   colors = [1, 2, 3, 1, 2, 3, 1, 4],
   initialActiveIndex = 0,
-  onChange // 🚀 Added callback to notify page.tsx
+  onChange
 }) => {
   const containerRef = useRef(null);
   const navRef = useRef(null);
