@@ -89,12 +89,7 @@ const CardNav = ({
     return tl;
   };
 
-  const isFirstMountRef = useRef(true);
-
   useLayoutEffect(() => {
-    if (!isFirstMountRef.current) return;
-    isFirstMountRef.current = false;
-
     const tl = createTimeline();
     tlRef.current = tl;
 
@@ -162,7 +157,6 @@ const CardNav = ({
     
     setIsHamburgerOpen(false);
     setIsExpanded(false);
-    tl.reverse(); 
 
     tl.timeScale(2.4); 
     tl.reverse();

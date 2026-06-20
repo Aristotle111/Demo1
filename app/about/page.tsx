@@ -13,28 +13,28 @@ const items = [
     {
       label: "Control the Complexity",
       path: "/about",
-      bgColor: "#000000",
+      bgColor: "#0e0e0e",
       textColor: "#ffc4c4",
       description: "Slide between basic, intermediate, and advanced versions of the same problem to build confidence at your own pace."
     },
     {
       label: "Drag, Drop, Learn",
       path: "/about",
-      bgColor: "#000000",
+      bgColor: "#0e0e0e",
       textColor: "#b7eeff",
       description: "Reconstruct problem solutions through interactive drag-and-drop tasks that test both logic and language."
     },
     {
       label: "Highlight What Matters",
       path: "/about",
-      bgColor: "#000000",
+      bgColor: "#0e0e0e",
       textColor: "#d0bbff",
       description: "Aligned phrases glow together when hovered, helping you connect meaning across languages and levels."
     },
     {
       label: "Understand, Don't Memorize",
       path: "/about",
-      bgColor: "#000000",
+      bgColor: "#0e0e0e",
       textColor: "#bbffbf",
       description: "Visual tools, animations, phrasing breakdowns help you see how the math really works."
     }
@@ -78,7 +78,7 @@ const App = () => {
   
   return (
     <div className="relative min-h-screen flex flex-col w-full overflow-hidden bg-black">
-      <GridPattern width={40} height={40} x={-1} y={-1} className={cn("stroke-white/5")} />
+      <GridPattern width={60} height={60} x={-1} y={-1} className={cn("stroke-white/5")} />
       
       <div className="relative z-50 flex items-start justify-between w-full p-4 pointer-events-none">
         <div className="pointer-events-auto">
