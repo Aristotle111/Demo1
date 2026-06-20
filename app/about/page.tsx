@@ -44,39 +44,96 @@ const items = [
     }
 ];
 
-const contentData = [
+type Language = "EN" | "FR";
+
+interface ContentItem {
+  title: Record<Language, string>;
+  beginner: Record<Language, string>;
+  intermediate: Record<Language, string>;
+  advanced: Record<Language, string>;
+}
+
+const contentData: ContentItem[] = [
     {
-      title: "Binomial Probability Problem",
-      beginner: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.",
-      intermediate: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.",
-      advanced: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units."
+      title: {
+        EN: "Binomial Probability Problem",
+        FR: "Problème de Probabilité Binomiale"
+      },
+      beginner: {
+        EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.",
+        FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?"
+      },
+      intermediate: {
+        EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.",
+        FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence."
+      },
+      advanced: {
+        EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.",
+        FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?"
+      }
     },
     {
-      title: "Rodent Thermoregulation",
-      beginner: "1Textbooks are passive; learning should be active. With our interactive solving engine, you reconstruct problem solutions through drag-and-drop tasks. This forces you to engage with the sequential logic of a statistical proof or calculation, testing your understanding of both the logic and the technical language.",
-      intermediate: "2Textbooks are passive; learning should be active. With our interactive solving engine, you reconstruct problem solutions through drag-and-drop tasks. This forces you to engage with the sequential logic of a statistical proof or calculation, testing your understanding of both the logic and the technical language.",
-      advanced: "3Textbooks are passive; learning should be active. With our interactive solving engine, you reconstruct problem solutions through drag-and-drop tasks. This forces you to engage with the sequential logic of a statistical proof or calculation, testing your understanding of both the logic and the technical language.",
+      title: {
+        EN: "Binomial Probability Problem",
+        FR: "Problème de Probabilité Binomiale"
+      },
+      beginner: {
+        EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.",
+        FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?"
+      },
+      intermediate: {
+        EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.",
+        FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence."
+      },
+      advanced: {
+        EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.",
+        FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?"
+      }
     },
     {
-      title: "Lollipop Flavoured Insecticide",
-      beginner: "1Connect the dots across languages and levels. Aligned phrases glow together when hovered, creating a visual bridge between a word in English and its mathematical notation. This immediate visual feedback helps you stop translating and start seeing the underlying structure of the data.",
-      intermediate: "2Connect the dots across languages and levels. Aligned phrases glow together when hovered, creating a visual bridge between a word in English and its mathematical notation. This immediate visual feedback helps you stop translating and start seeing the underlying structure of the data.",
-      advanced: "3Connect the dots across languages and levels. Aligned phrases glow together when hovered, creating a visual bridge between a word in English and its mathematical notation. This immediate visual feedback helps you stop translating and start seeing the underlying structure of the data.",
+      title: {
+        EN: "Binomial Probability Problem",
+        FR: "Problème de Probabilité Binomiale"
+      },
+      beginner: {
+        EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.",
+        FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?"
+      },
+      intermediate: {
+        EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.",
+        FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence."
+      },
+      advanced: {
+        EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.",
+        FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?"
+      }
     },
     {
-      title: "Hair Length and Mating Success in Lizards",
-      beginner: "1Formula memorization is the enemy of true statistical literacy. Our tools use custom animations and phrasing breakdowns to help you see how the math actually works under the hood. We break down the 'why' before the 'how,' ensuring you understand the story the data is telling.",
-      intermediate: "2Formula memorization is the enemy of true statistical literacy. Our tools use custom animations and phrasing breakdowns to help you see how the math actually works under the hood. We break down the 'why' before the 'how,' ensuring you understand the story the data is telling.",
-      advanced: "3Formula memorization is the enemy of true statistical literacy. Our tools use custom animations and phrasing breakdowns to help you see how the math actually works under the hood. We break down the 'why' before the 'how,' ensuring you understand the story the data is telling.",
+      title: {
+        EN: "Binomial Probability Problem",
+        FR: "Problème de Probabilité Binomiale"
+      },
+      beginner: {
+        EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.",
+        FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?"
+      },
+      intermediate: {
+        EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.",
+        FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence."
+      },
+      advanced: {
+        EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.",
+        FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?"
+      }
     }
 ];
 
 const App = () => {
   const [activeIndex, setActiveIndex] = useState(null);
-  const [currentLanguage, setCurrentLanguage] = useState("EN");
+  const [currentLanguage, setCurrentLanguage] = useState<Language>("EN");
   const [difficulty, setDifficulty] = useState("Beginner");
 
-  const handleLanguageChange = (selectedLang : string) => {
+  const handleLanguageChange = (selectedLang : Language) => {
     setCurrentLanguage(selectedLang);
   };
   
@@ -109,7 +166,7 @@ const App = () => {
         {activeIndex !== null && (
           <>
             <h1 className={cn("text-2xl md:text-5xl font-extrabold text-white tracking-tight mb-6 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
-              {contentData[activeIndex]?.title}
+              {contentData[activeIndex]?.title[currentLanguage]}
             </h1>
 
             {(() => {
@@ -121,7 +178,7 @@ const App = () => {
                       {difficulty === "Beginner" && (
                         <div className="animate-fade-in text-left">
                           <p className={cn("text-zinc-300 text-xl md:text-2xl leading-loose tracking-wide font-light tracking-[0.1em]", inter.className)}>
-                            {contentData[activeIndex]?.beginner}
+                            {contentData[activeIndex]?.beginner[currentLanguage]}
                           </p>
                         </div>
                       )}
@@ -129,7 +186,7 @@ const App = () => {
                       {difficulty === "Intermediate" && (
                         <div className="animate-fade-in text-left">
                           <p className={cn("text-zinc-300 text-xl md:text-2xl leading-loose tracking-wide font-light tracking-[0.1em]", inter.className)}>
-                            {contentData[activeIndex]?.intermediate}
+                            {contentData[activeIndex]?.intermediate[currentLanguage]}
                           </p>
                         </div>
                       )}
@@ -137,7 +194,7 @@ const App = () => {
                       {difficulty === "Advanced" && (
                         <div className="animate-fade-in text-left">
                           <p className={cn("text-zinc-300 text-xl md:text-2xl leading-loose tracking-wide font-light tracking-[0.1em]", inter.className)}>
-                            {contentData[activeIndex]?.advanced}
+                            {contentData[activeIndex]?.advanced[currentLanguage]}
                           </p>
                         </div>
                       )}
