@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+
 .card-nav-container {
   position: absolute;
   top: 2em;
@@ -82,6 +85,7 @@
 }
 
 .card-nav-cta-button {
+  font-family: 'Inter', sans-serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -148,12 +152,6 @@
   filter: brightness(1.2);
   transform: translateY(-8px) !important;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
-}
-
-.nav-card-label {
-  font-weight: 400;
-  font-size: 22px;
-  letter-spacing: -0.5px;
 }
 
 .nav-card-links {
@@ -235,13 +233,15 @@
 }
 
 .nav-card-label {
-  font-size: 1.25rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.10rem;
   font-weight: 600;
 }
 
 .nav-card-description {
+  font-family: 'Inter', sans-serif;
   margin: 0;
-  font-size: 1.0rem;
+  font-size: 0.90rem;
   opacity: 0.7;
   font-weight: 400;
   line-height: 1.6;
@@ -263,6 +263,7 @@
 }
 
 .logo-text {
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 2.0rem;
   font-weight: 700;
   color: #747474;

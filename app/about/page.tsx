@@ -8,6 +8,10 @@ import LanguageToggle from '@/components/LanguageToggle';
 import GridPattern from '@/components/ui/grid-pattern';
 import GooeyNav from '@/components/GooeyNav';
 import { cn } from "@/lib/utils";
+import { Space_Grotesk, Inter } from 'next/font/google';
+
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'] });
 
 const items = [
     {
@@ -101,10 +105,10 @@ const App = () => {
         </div>
       </div>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-5xl w-full mx-auto px-6 text-center animate-fade-in pb-32">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-7xl w-full mx-auto px-6 text-center animate-fade-in pb-32">
         {activeIndex !== null && (
           <>
-            <h1 className="text-2xl md:text-5xl font-extrabold text-white tracking-tight mb-6 bg-clip-text bg-gradient-to-b from-white to-zinc-400">
+            <h1 className={cn("text-2xl md:text-5xl font-extrabold text-white tracking-tight mb-6 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
               {contentData[activeIndex]?.title}
             </h1>
 
@@ -116,7 +120,7 @@ const App = () => {
                       
                       {difficulty === "Beginner" && (
                         <div className="animate-fade-in text-left">
-                          <p className="text-zinc-300 text-xl md:text-2xl leading-relaxed font-light">
+                          <p className={cn("text-zinc-300 text-xl md:text-2xl leading-loose tracking-wide font-light tracking-[0.1em]", inter.className)}>
                             {contentData[activeIndex]?.beginner}
                           </p>
                         </div>
@@ -124,7 +128,7 @@ const App = () => {
 
                       {difficulty === "Intermediate" && (
                         <div className="animate-fade-in text-left">
-                          <p className="text-zinc-300 text-xl md:text-2xl leading-relaxed font-light">
+                          <p className={cn("text-zinc-300 text-xl md:text-2xl leading-loose tracking-wide font-light tracking-[0.1em]", inter.className)}>
                             {contentData[activeIndex]?.intermediate}
                           </p>
                         </div>
@@ -132,7 +136,7 @@ const App = () => {
 
                       {difficulty === "Advanced" && (
                         <div className="animate-fade-in text-left">
-                          <p className="text-zinc-300 text-xl md:text-2xl leading-relaxed font-light">
+                          <p className={cn("text-zinc-300 text-xl md:text-2xl leading-loose tracking-wide font-light tracking-[0.1em]", inter.className)}>
                             {contentData[activeIndex]?.advanced}
                           </p>
                         </div>
