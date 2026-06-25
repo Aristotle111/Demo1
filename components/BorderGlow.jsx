@@ -53,16 +53,16 @@ function animateValue({ start = 0, end = 100, duration = 1000, delay = 0, ease =
 const BorderGlow = ({
   children,
   className = '',
-  edgeSensitivity = 1,
+  edgeSensitivity = 0.5,
   glowColor = '0 0 0',
   backgroundColor = '#a5a5a5',
   borderRadius = 8,
   glowRadius = 40,
-  glowIntensity = 3.0,
-  coneSpread = 15,
+  glowIntensity = 36.0,
+  coneSpread = 5,
   animated = false,
   colors = ['#000000', '#000000', '#000000'],
-  fillOpacity = 0.9,
+  fillOpacity = 1,
 }) => {
   const cardRef = useRef(null);
 

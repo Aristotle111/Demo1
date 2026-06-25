@@ -10,6 +10,7 @@ const CardNav = ({
   logo,
   logoAlt = 'Logo',
   items,
+  homeLabel = 'Home',
   className = '',
   ease = 'power3.out',
   baseColor = '#ffffff',
@@ -96,7 +97,7 @@ const CardNav = ({
     if (defaultOpen && tl) {
       setIsHamburgerOpen(true);
       setIsExpanded(true);
-      tl.progress(1); 
+      tl.play();
     }
 
     return () => {
@@ -191,7 +192,7 @@ const CardNav = ({
             className="card-nav-cta-button"
             style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
           >
-            Home
+            {homeLabel}
           </Link>
         </div>
 
