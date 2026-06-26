@@ -10,9 +10,29 @@ export interface DragDropTask {
 
 interface DragDropCanvasProps {
   taskData: DragDropTask;
+  language: "EN" | "FR";
 }
 
-export default function DragDropCanvas({ taskData }: DragDropCanvasProps) {
+const uiText = {
+  placeholder: {
+    EN: "Click the pieces to construct your answer...",
+    FR: "Cliquez sur les pièces pour construire votre réponse..."
+  },
+  success: {
+    EN: "Correct! Well done.",
+    FR: "Correct ! Bien joué."
+  },
+  error: {
+    EN: "Not quite, try adjusting the order.",
+    FR: "Pas tout à fait, essayez de modifier l'ordre."
+  },
+  verifyBtn: {
+    EN: "Verify Answer",
+    FR: "Vérifier la réponse"
+  }
+};
+
+export default function DragDropCanvas({ taskData, language }: DragDropCanvasProps) {
   const [pool, setPool] = useState<string[]>([]);
   const [answerBox, setAnswerBox] = useState<string[]>([]);
   const [status, setStatus] = useState<"success" | "error" | null>(null);
@@ -83,7 +103,11 @@ export default function DragDropCanvas({ taskData }: DragDropCanvasProps) {
         status === "error" ? "border-red-500/50 bg-red-500/5" : 
         "border-zinc-700 bg-zinc-950/50"
       )}>
-        {answerBox.length === 0 && <span className="text-zinc-600 text-lg my-auto p-2 mx-auto select-none">Construct your answer here...</span>}
+        {answerBox.length === 0 && (
+          <span className="text-zinc-600 text-lg my-auto p-2 mx-auto select-none">
+            {uiText.placeholder[language]}
+          </span>
+        )}
         
         {answerBox.map((item, i) => (
           <button
@@ -123,7 +147,7 @@ export default function DragDropCanvas({ taskData }: DragDropCanvasProps) {
           status === "success" ? "text-green-400 opacity-100" :
           status === "error" ? "text-red-400 opacity-100" : "opacity-0"
         )}>
-          {status === "success" ? "Correct! Well done." : "Not quite, try adjusting the order."}
+          {status === "success" ? uiText.success[language] : uiText.error[language]}
         </span>
         
         <button 
@@ -131,7 +155,7 @@ export default function DragDropCanvas({ taskData }: DragDropCanvasProps) {
           disabled={answerBox.length === 0}
           className="px-4 py-2 bg-white text-black text-lg rounded-lg font-bold disabled:opacity-50 hover:bg-zinc-200 transition-colors"
         >
-          Verify Answer
+          {uiText.verifyBtn[language]}
         </button>
       </div>
     </div>

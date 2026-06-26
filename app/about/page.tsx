@@ -9,7 +9,7 @@ import GridPattern from '@/components/ui/grid-pattern';
 import GooeyNav from '@/components/GooeyNav';
 import { cn } from "@/lib/utils";
 import { Space_Grotesk, Inter } from 'next/font/google';
-import DragDropCanvas from '@/components/DragDropCanvas';
+import DragDropCanvas, { DragDropTask } from '@/components/DragDropCanvas';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 const inter = Inter({ subsets: ['latin'] });
@@ -43,12 +43,6 @@ const App = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [currentLanguage, setCurrentLanguage] = useState<Language>("EN");
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
-
-  interface DragDropTask {
-    prompt: string;
-    options: string[];
-    correctOrder: string[];
-  }
 
   interface ContentItem {
     title: Record<Language, string>;
@@ -179,7 +173,7 @@ const App = () => {
                     </div>
                   );
                 case 1:
-                  return dragDropTask ? <DragDropCanvas taskData={dragDropTask} /> : <div className="text-zinc-500 py-10">Data not available</div>;
+                  return dragDropTask ? <DragDropCanvas taskData={dragDropTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
                 case 2:
                   return <div className="text-zinc-500 py-10">[Layout 3: Phrase Alignment Highlighter]</div>;
                 case 3:
