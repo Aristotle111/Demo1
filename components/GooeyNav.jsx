@@ -103,14 +103,13 @@ const GooeyNav = ({
   };
 
   const handleClick = (e, index, label) => {
-    e.preventDefault(); // Prevent href="#" from appending to URL or jumping page
-    const liEl = e.currentTarget.parentElement; // 🚀 TARGET INVERSION FIX: Get the <li> element wrapper
+    e.preventDefault();
+    const liEl = e.currentTarget.parentElement;
     if (!liEl || activeIndex === index) return;
 
     setActiveIndex(index);
     updateEffectPosition(liEl);
 
-    // Fire callback back up to your parent switch layout frame
     if (typeof onChange === 'function') {
       onChange(label);
     }
@@ -165,7 +164,6 @@ const GooeyNav = ({
       <nav>
         <ul ref={navRef}>
           {items.map((item, index) => {
-            // Support passing either raw strings or structured objects
             const label = typeof item === 'string' ? item : item.label;
             const href = typeof item === 'string' ? '#' : (item.href || '#');
 
