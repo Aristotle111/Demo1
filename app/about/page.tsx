@@ -10,6 +10,7 @@ import GooeyNav from '@/components/GooeyNav';
 import { cn } from "@/lib/utils";
 import { Space_Grotesk, Inter } from 'next/font/google';
 import DragDropCanvas, { DragDropTask } from '@/components/DragDropCanvas';
+import DynamicProblemCanvas, { DynamicProblemTask } from '@/components/DynamicProblemCanvas';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 const inter = Inter({ subsets: ['latin'] });
@@ -50,6 +51,7 @@ const App = () => {
     intermediate: Record<Language, string>;
     advanced: Record<Language, string>;
     dragDropData?: Record<Difficulty, Record<Language, DragDropTask>>;
+    dynamicProblemData?: Record<Difficulty, Record<Language, DynamicProblemTask>>; // NEW
   }
 
   const [problems, setProblems] = useState<ContentItem[]>([
@@ -95,6 +97,98 @@ const App = () => {
             correctOrder: ["Étant donné que", "z = -2,25", "dépasse la borne critique de -1,96", "on rejette l’hypothèse nulle (H₀).", "Cela soutient l’inférence que", "μ ≠ 12 g au niveau de signification de 5 %."]
           }
         }
+      },
+      dynamicProblemData: {
+        beginner: {
+          EN: {
+            title: "Rodent Thermoregulation",
+            textStart: "A team of researchers is studying wild rodents. The average temperature is 38.5°C. What is the probability that a randomly selected rodent has a temperature",
+            textEnd: "°C?",
+            defaultNumber: 39.2,
+            increment: 1.0,
+            mu: 38.5,
+            sigma: 0.7,
+            explanationTemplates: {
+              less: "The probability of getting a value with a z-score of {{z}} or less is about {{prob}}.",
+              greater: "The probability of getting a value with a z-score of {{z}} or more is about {{prob}}.",
+              between: "The probability of getting a value between z-scores of {{z1}} and {{z2}} is about {{prob}}."
+            }
+          },
+          FR: {
+            title: "Thermorégulation Chez les Rongeurs",
+            textStart: "Une équipe de chercheurs étudie des rongeurs sauvages. La température moyenne est de 38,5°C. Quelle est la probabilité qu'un rongeur sélectionné au hasard ait une température",
+            textEnd: "°C ?",
+            defaultNumber: 39.2,
+            increment: 1.0,
+            mu: 38.5,
+            sigma: 0.7,
+            explanationTemplates: {
+              less: "La probabilité d'obtenir une valeur avec un score z de {{z}} ou moins est d'environ {{prob}}.",
+              greater: "La probabilité d'obtenir une valeur avec un score z de {{z}} ou plus est d'environ {{prob}}.",
+              between: "La probabilité d'obtenir une valeur comprise entre les scores z de {{z1}} et {{z2}} est d'environ {{prob}}."
+            }
+          }
+        },
+        intermediate: {
+          EN: {
+            title: "Rodent Thermoregulation",
+            textStart: "The body temperature of wild rodents follows a normal distribution with a mean of 38.5°C and a standard deviation of 0.7°C. What is the probability that a randomly selected rodent has a temperature",
+            textEnd: "°C?",
+            defaultNumber: 39.2,
+            increment: 1.0,
+            mu: 38.5,
+            sigma: 0.7,
+            explanationTemplates: {
+              less: "A z-score of {{z}} corresponds to a cumulative probability of approximately {{prob}}.",
+              greater: "A z-score of {{z}} corresponds to an upper tail probability of approximately {{prob}}.",
+              between: "The area under the curve between z = {{z1}} and z = {{z2}} is approximately {{prob}}."
+            }
+          },
+          FR: {
+            title: "Thermorégulation Chez les Rongeurs",
+            textStart: "La température corporelle des rongeurs sauvages suit une distribution normale avec une moyenne de 38,5°C et un écart-type de 0,7°C. Quelle est la probabilité qu'un rongeur sélectionné au hasard ait une température",
+            textEnd: "°C ?",
+            defaultNumber: 39.2,
+            increment: 1.0,
+            mu: 38.5,
+            sigma: 0.7,
+            explanationTemplates: {
+              less: "Un score z de {{z}} correspond à une probabilité cumulée d'environ {{prob}}.",
+              greater: "Un score z de {{z}} correspond à une probabilité dans la queue supérieure d'environ {{prob}}.",
+              between: "L'aire sous la courbe entre z = {{z1}} et z = {{z2}} est d'environ {{prob}}."
+            }
+          }
+        },
+        advanced: {
+          EN: {
+            title: "Rodent Thermoregulation",
+            textStart: "Within a population of wild rodents, core body temperature is modeled by a normal distribution with parameters μ = 38.5°C and σ = 0.7°C. Determine the probability that a randomly selected individual exhibits a temperature",
+            textEnd: "°C?",
+            defaultNumber: 39.2,
+            increment: 1.0,
+            mu: 38.5,
+            sigma: 0.7,
+            explanationTemplates: {
+              less: "The lower tail probability for z = {{z}} evaluates to approximately {{prob}}.",
+              greater: "The upper tail probability for z = {{z}} is approximately {{prob}}.",
+              between: "The probability mass bounded by z ∈ [{{z1}}, {{z2}}] integrates to approximately {{prob}}."
+            }
+          },
+          FR: {
+            title: "Thermorégulation Chez les Rongeurs",
+            textStart: "Au sein d'une population de rongeurs sauvages, la température corporelle centrale est modélisée par une distribution normale avec les paramètres μ = 38,5°C et σ = 0,7°C. Déterminez la probabilité qu'un individu sélectionné au hasard présente une température",
+            textEnd: "°C ?",
+            defaultNumber: 39.2,
+            increment: 1.0,
+            mu: 38.5,
+            sigma: 0.7,
+            explanationTemplates: {
+              less: "La probabilité de la queue inférieure pour z = {{z}} est évaluée à environ {{prob}}.",
+              greater: "La probabilité de la queue supérieure pour z = {{z}} est d'environ {{prob}}.",
+              between: "La masse de probabilité délimitée par z ∈ [{{z1}}, {{z2}}] s'intègre à environ {{prob}}."
+            }
+          }
+        }
       }
     },
   ]);
@@ -120,10 +214,19 @@ const App = () => {
     setCurrentLanguage(selectedLang);
   };
 
+  const displayTitle = () => {
+    if (activeIndex === 3 && dynamicTask) {
+      return dynamicTask.title; // Use the specific interactive title
+    }
+    // Fallback to the main problem title for the reading section
+    return currentProblem?.title[currentLanguage]; 
+  };
+
   const currentProblem = problems.length > 0 ? problems[0] : null;
   const dynamicProblemText = currentProblem ? currentProblem[difficulty][currentLanguage] : "";
   const currentGooeyItems = difficultyKeys.map(key => difficultyLabels[currentLanguage][key]);
   const dragDropTask = currentProblem?.dragDropData ? currentProblem.dragDropData[difficulty][currentLanguage] : null;
+  const dynamicTask = currentProblem?.dynamicProblemData ? currentProblem.dynamicProblemData[difficulty][currentLanguage] : null;
   
   return (
     <div className="relative min-h-screen flex flex-col w-full overflow-hidden bg-black">
@@ -156,7 +259,7 @@ const App = () => {
           <>
             {activeIndex !== 1 && activeIndex !== 2 && (
               <h1 className={cn("text-2xl md:text-5xl font-extrabold text-white tracking-tight mb-6 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
-                {currentProblem?.title[currentLanguage]}
+                {displayTitle()}
               </h1>
             )}
 
@@ -177,7 +280,7 @@ const App = () => {
                 case 2:
                   return <div className="text-zinc-500 py-10">[Layout 3: Phrase Alignment Highlighter]</div>;
                 case 3:
-                  return <div className="text-zinc-500 py-10">[Layout 4: Custom Animation Breakdown]</div>;
+                  return dynamicTask ? <DynamicProblemCanvas taskData={dynamicTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
                 default:
                   return null;
               }
