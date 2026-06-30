@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 export interface BilingualTask {
@@ -34,6 +34,10 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setShowSolution(false);
+  }, [taskData]);
 
   const oppositeLanguage = currentLanguage === "EN" ? "FR" : "EN";
   const primarySentences = taskData.sentences[currentLanguage];
