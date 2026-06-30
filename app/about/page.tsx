@@ -3,7 +3,6 @@ import { useState } from "react";
 import BorderGlow from "@/components/BorderGlow";
 import FlowingMenu from '@/components/FlowingMenu'
 import CardNav from '@/components/CardNav';
-import logo from '@/components/Transparent_X.png';
 import LanguageToggle from '@/components/LanguageToggle';
 import GridPattern from '@/components/ui/grid-pattern';
 import GooeyNav from '@/components/GooeyNav';
@@ -11,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Space_Grotesk, Inter } from 'next/font/google';
 import DragDropCanvas, { DragDropTask } from '@/components/DragDropCanvas';
 import DynamicProblemCanvas, { DynamicProblemTask } from '@/components/DynamicProblemCanvas';
+import BilingualHighlighter, { BilingualTask } from '@/components/BilingualHighlighter';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 const inter = Inter({ subsets: ['latin'] });
@@ -51,7 +51,8 @@ const App = () => {
     intermediate: Record<Language, string>;
     advanced: Record<Language, string>;
     dragDropData?: Record<Difficulty, Record<Language, DragDropTask>>;
-    dynamicProblemData?: Record<Difficulty, Record<Language, DynamicProblemTask>>; // NEW
+    dynamicProblemData?: Record<Difficulty, Record<Language, DynamicProblemTask>>;
+    bilingualReadingData?: Record<Difficulty, BilingualTask>;
   }
 
   const [problems, setProblems] = useState<ContentItem[]>([
@@ -60,6 +61,68 @@ const App = () => {
       beginner: { EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.", FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?" },
       intermediate: { EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.", FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence." },
       advanced: { EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.", FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?" },
+      bilingualReadingData: {
+        beginner: {
+          sentences: {
+            EN: [
+              "We are testing the average weight of a species of frog.",
+              "The population standard deviation is known and stable.",
+              "We calculate the test statistic using the sample mean.",
+              "Finally, we compare it to our critical values to make a decision."
+            ],
+            FR: [
+              "Nous testons le poids moyen d'une espèce de grenouille.",
+              "L'écart-type de la population est connu et stable.",
+              "Nous calculons la statistique de test en utilisant la moyenne de l'échantillon.",
+              "Enfin, nous la comparons à nos valeurs critiques pour prendre une décision."
+            ]
+          },
+          solution: { 
+            EN: "Compare Z-statistic to alpha threshold (1.96 for 95% CI).", 
+            FR: "Comparez le score Z au seuil alpha (1,96 pour IC 95%)." 
+          }
+        },
+        intermediate: {
+          sentences: {
+            EN: [
+              "Sampling distributions reveal deviations from population norms.",
+              "With large datasets, the central limit theorem justifies Z-testing.",
+              "The test statistic normalizes sample error against standard deviation.",
+              "Reject the null when observed variance exceeds critical bounds."
+            ],
+            FR: [
+              "Les distributions d'échantillonnage montrent des différences dans les normes de la population.",
+              "Avec des gros ensembles de données, le théorème de la limite centrale justifie le test Z.",
+              "La statistique de test normalise l'erreur d'échantillonnage par rapport à l'écart-type.",
+              "Rejeter le nulle lorsque la variance observée dépasse les limites critiques."
+            ]
+          },
+          solution: { 
+            EN: "Calculate Z = (x̄ - μ) / (σ/√n); evaluate against α-level distribution tails.", 
+            FR: "Calculez Z = (x̄ - μ) / (σ/√n) ; évaluez par rapport aux queues de la distribution α." 
+          }
+        },
+        advanced: {
+          sentences: {
+            EN: [
+              "Sampling assesses deviations from the population mean.",
+              "Assuming normal distribution, a Z-test is applicable.",
+              "The test statistic scales sample error by standard error.",
+              "Rejection occurs when the test statistic exceeds alpha boundaries."
+            ],
+            FR: [
+              "L'échantillonnage évalue les déviations de la moyenne de la population.",
+              "En supposant une distribution normale, on peut recourir à un test Z.",
+              "La statistique de test met en rapport l'erreur d'échantillonnage avec l'erreur-type.",
+              "Le rejet se produit lorsque la statistique de test dépasse les limites alpha."
+            ]
+          },
+          solution: {
+            EN: "Compute z = (x̄ - μ) / (σ / √n). The critical region is defined by the area in the tails of the standard normal distribution.",
+            FR: "Calculez z = (x̄ - μ) / (σ / √n). La région critique est définie par l'aire dans les queues de la distribution normale centrée réduite."
+          }
+        }
+      },
       dragDropData: {
         beginner: {
           EN: {
@@ -227,6 +290,7 @@ const App = () => {
   const currentGooeyItems = difficultyKeys.map(key => difficultyLabels[currentLanguage][key]);
   const dragDropTask = currentProblem?.dragDropData ? currentProblem.dragDropData[difficulty][currentLanguage] : null;
   const dynamicTask = currentProblem?.dynamicProblemData ? currentProblem.dynamicProblemData[difficulty][currentLanguage] : null;
+  const bilingualTask = currentProblem?.bilingualReadingData ? currentProblem.bilingualReadingData[difficulty] : null;
   
   return (
     <div className="relative min-h-screen flex flex-col w-full overflow-hidden bg-black">
@@ -235,7 +299,7 @@ const App = () => {
       <div className="relative z-50 flex items-start justify-between w-full p-4 pointer-events-none">
         <div className="pointer-events-auto">
           <CardNav
-            logo={logo}
+            logo={null}
             logoAlt="Stat à Stat"
             items={navItems[currentLanguage]}
             homeLabel={currentLanguage === "EN" ? "Home" : "Accueil"}
@@ -278,7 +342,11 @@ const App = () => {
                 case 1:
                   return dragDropTask ? <DragDropCanvas taskData={dragDropTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
                 case 2:
-                  return <div className="text-zinc-500 py-10">[Layout 3: Phrase Alignment Highlighter]</div>;
+                  return bilingualTask ? (
+                    <BilingualHighlighter taskData={bilingualTask} currentLanguage={currentLanguage} />
+                  ) : (
+                    <div className="text-zinc-500 py-10">Data not available</div>
+                  );
                 case 3:
                   return dynamicTask ? <DynamicProblemCanvas taskData={dynamicTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
                 default:
