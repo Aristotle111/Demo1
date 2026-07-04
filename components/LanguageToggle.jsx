@@ -22,14 +22,14 @@ const LanguageToggle = ({ onChange }) => {
       {lang === "EN" ? (
         <span className="relative tracking-wide">
           ENG
-          <span className="absolute -top-1.5 -right-3.5 text-[9px] font-bold text-zinc-500 group-hover:text-zinc-400 scale-75 transition-colors">
+          <span className="absolute -top-2 -right-4.5 text-[13px] font-bold text-zinc-500 group-hover:text-zinc-400 scale-75 transition-colors">
             GB
           </span>
         </span>
       ) : (
         <span className="relative tracking-wide">
           FRA
-          <span className="absolute -top-1.5 -right-3.5 text-[9px] font-bold text-zinc-500 group-hover:text-zinc-400 scale-75 transition-colors">
+          <span className="absolute -top-2 -right-4.5 text-[13px] font-bold text-zinc-500 group-hover:text-zinc-400 scale-75 transition-colors">
             FR
           </span>
         </span>

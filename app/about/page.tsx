@@ -47,10 +47,8 @@ const App = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
 
   const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.35 });
-  const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.05 }); // Very faint
-  const [playMenuClose] = useSound('/sounds/menu_Click2.mp3', { volume: 0.1 });
+  const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.05 });
   const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.1 });
-  const [playHomeClick] = useSound('/sounds/home_Click.mp3', { volume: 0.1 });
 
   interface ContentItem {
     title: Record<Language, string>;
@@ -287,9 +285,8 @@ const App = () => {
 
   const displayTitle = () => {
     if (activeIndex === 3 && dynamicTask) {
-      return dynamicTask.title; // Use the specific interactive title
+      return dynamicTask.title;
     }
-    // Fallback to the main problem title for the reading section
     return currentProblem?.title[currentLanguage]; 
   };
 
