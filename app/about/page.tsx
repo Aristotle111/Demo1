@@ -46,7 +46,7 @@ const App = () => {
   const [currentLanguage, setCurrentLanguage] = useState<Language>("EN");
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
 
-  const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.15 });
+  const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.35 });
   const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.05 }); // Very faint
   const [playMenuClose] = useSound('/sounds/menu_Click2.mp3', { volume: 0.1 });
   const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.1 });
