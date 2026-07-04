@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { GoArrowUpRight } from 'react-icons/go';
 import Link from 'next/link';
+import useSound from 'use-sound';
 import './CardNav.css';
 
 const CardNav = ({
@@ -25,6 +26,9 @@ const CardNav = ({
   const navRef = useRef(null);
   const cardsRef = useRef([]);
   const tlRef = useRef(null);
+  const [playMenuOpen] = useSound('/sounds/menu_Open.mp3', { volume: 0.1 });
+  const [playHomeClick] = useSound('/sounds/home_Click.mp3', { volume: 0.1 });
+  const [playMenuHover] = useSound('/sounds/menu_Hover2.mp3', { volume: 0.05 });
 
   const isExpandedRef = useRef(isExpanded);
   useLayoutEffect(() => {
@@ -98,13 +102,14 @@ const CardNav = ({
       setIsHamburgerOpen(true);
       setIsExpanded(true);
       tl.play();
+      playMenuOpen();
     }
 
     return () => {
       tl?.kill();
       tlRef.current = null;
     };
-  }, [ease, defaultOpen]);
+  }, [ease, defaultOpen, playMenuOpen]);
 
   const lastWidthRef = useRef(typeof window !== 'undefined' ? window.innerWidth : 0);
   useLayoutEffect(() => {
@@ -147,6 +152,7 @@ const CardNav = ({
       setIsExpanded(true);
       tl.timeScale(1.0);
       tl.play(); 
+      playMenuOpen();
     } else {
       closeMenu();
     }
@@ -191,6 +197,7 @@ const CardNav = ({
             href="/"
             className="card-nav-cta-button"
             style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
+            onClick={() => playHomeClick()}
           >
             {homeLabel}
           </Link>
@@ -203,6 +210,7 @@ const CardNav = ({
               href='#'
               className="nav-card clickable-card"
               ref={setCardRef(idx)}
+              onMouseEnter={() => playMenuHover()}
               style={{ backgroundColor: item.bgColor, color: item.textColor }}
               onClick={(e) => {
                 e.preventDefault(); 

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BorderGlow from "@/components/BorderGlow";
 import FlowingMenu from '@/components/FlowingMenu'
 import CardNav from '@/components/CardNav';
@@ -11,6 +11,7 @@ import { Space_Grotesk, Inter } from 'next/font/google';
 import DragDropCanvas, { DragDropTask } from '@/components/DragDropCanvas';
 import DynamicProblemCanvas, { DynamicProblemTask } from '@/components/DynamicProblemCanvas';
 import BilingualHighlighter, { BilingualTask } from '@/components/BilingualHighlighter';
+import useSound from 'use-sound';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 const inter = Inter({ subsets: ['latin'] });
@@ -44,6 +45,12 @@ const App = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [currentLanguage, setCurrentLanguage] = useState<Language>("EN");
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
+
+  const [playMenuClick] = useSound('/sounds/menu_Click.mp3', { volume: 0.15 });
+  const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.05 }); // Very faint
+  const [playMenuClose] = useSound('/sounds/menu_Close.m4a', { volume: 0.1 });
+  const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.1 });
+  const [playHomeClick] = useSound('/sounds/home_Click.mp3', { volume: 0.1 });
 
   interface ContentItem {
     title: Record<Language, string>;
@@ -274,6 +281,7 @@ const App = () => {
   };
 
   const handleLanguageChange = (selectedLang : Language) => {
+    playLanguageClick();
     setCurrentLanguage(selectedLang);
   };
 
@@ -284,6 +292,8 @@ const App = () => {
     // Fallback to the main problem title for the reading section
     return currentProblem?.title[currentLanguage]; 
   };
+
+  
 
   const currentProblem = problems.length > 0 ? problems[0] : null;
   const dynamicProblemText = currentProblem ? currentProblem[difficulty][currentLanguage] : "";
@@ -308,7 +318,10 @@ const App = () => {
             buttonBgColor="#3f3f3f"
             buttonTextColor="#000000"
             ease="power3.out"
-            onItemClick={(index : any) => setActiveIndex(index)}
+            onItemClick={(index: number) => {
+              playMenuClick();
+              setActiveIndex(index);
+            }}
             defaultOpen={true}
           />
         </div>
@@ -361,6 +374,7 @@ const App = () => {
             <GooeyNav 
               items={currentGooeyItems}
               onChange={(selectedLabel: string) => {
+                playDifficultyClick();
                 const selectedIndex = currentGooeyItems.indexOf(selectedLabel);
                 if (selectedIndex !== -1) {
                   setDifficulty(difficultyKeys[selectedIndex]);
