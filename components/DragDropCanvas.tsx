@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export interface DragDropTask {
   prompt: string;
@@ -91,72 +94,74 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-10 shadow-2xl backdrop-blur-md flex flex-col gap-10">
-      <p className="text-zinc-300 text-xl md:text-2xl leading-relaxed font-light text-left tracking-wide">
-        {taskData.prompt}
-      </p>
+    <div className={inter.className}>
+      <div className="w-full max-w-6xl mx-auto bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-10 shadow-2xl backdrop-blur-md flex flex-col gap-10">
+        <p className="text-zinc-300 text-xl md:text-2xl leading-relaxed font-light text-left tracking-wide">
+          {taskData.prompt}
+        </p>
 
-      {/* The Answer Box (Drop Zone) */}
-      <div className={cn(
-        "min-h-[80px] w-full border-2 border-dashed rounded-xl p-4 flex flex-wrap gap-3 items-start content-start transition-colors duration-300",
-        status === "success" ? "border-green-500/50 bg-green-500/5" : 
-        status === "error" ? "border-red-500/50 bg-red-500/5" : 
-        "border-zinc-700 bg-zinc-950/50"
-      )}>
-        {answerBox.length === 0 && (
-          <span className="text-zinc-600 text-lg my-auto p-2 mx-auto select-none">
-            {uiText.placeholder[language]}
-          </span>
-        )}
-        
-        {answerBox.map((item, i) => (
-          <button
-            key={`ans-${i}`}
-            draggable
-            onDragStart={(e) => handleDragStart(e, i)}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, i)}
-            onClick={() => moveToPool(i)}
-            className={cn(
-              "px-3 py-3 bg-white text-black text-md font-medium rounded-lg shadow-sm hover:scale-105 transition-transform cursor-grab active:cursor-grabbing",
-              draggedIndex === i ? "opacity-50" : "opacity-100"
-            )}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-
-      {/* The Pool (Draggable Items) */}
-      <div className="flex flex-wrap gap-4 justify-center items-start content-start min-h-[80px]">
-        {pool.map((item, i) => (
-          <button
-            key={`pool-${i}`}
-            onClick={() => moveToAnswer(i)}
-            className="px-3 py-3 bg-zinc-800 text-zinc-200 text-md border border-zinc-700 font-medium rounded-lg shadow-sm hover:bg-zinc-700 hover:scale-105 transition-all"
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-
-      {/* Controls */}
-      <div className="flex justify-between py-2 items-center">
-        <span className={cn(
-          "text-lg font-medium transition-opacity",
-          status === "success" ? "text-green-400 opacity-100" :
-          status === "error" ? "text-red-400 opacity-100" : "opacity-0"
+        {/* The Answer Box (Drop Zone) */}
+        <div className={cn(
+          "min-h-[80px] w-full border-2 border-dashed rounded-xl p-4 flex flex-wrap gap-3 items-start content-start transition-colors duration-300",
+          status === "success" ? "border-green-500/50 bg-green-500/5" : 
+          status === "error" ? "border-red-500/50 bg-red-500/5" : 
+          "border-zinc-700 bg-zinc-950/50"
         )}>
-          {status === "success" ? uiText.success[language] : uiText.error[language]}
-        </span>
-        
-        <button 
-          onClick={checkAnswer}
-          disabled={answerBox.length === 0}
-          className="px-4 py-2 bg-white text-black text-lg rounded-lg font-bold disabled:opacity-50 hover:bg-zinc-200 transition-colors"
-        >
-          {uiText.verifyBtn[language]}
-        </button>
+          {answerBox.length === 0 && (
+            <span className="text-zinc-600 text-lg my-auto p-2 mx-auto select-none">
+              {uiText.placeholder[language]}
+            </span>
+          )}
+          
+          {answerBox.map((item, i) => (
+            <button
+              key={`ans-${i}`}
+              draggable
+              onDragStart={(e) => handleDragStart(e, i)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, i)}
+              onClick={() => moveToPool(i)}
+              className={cn(
+                "px-3 py-3 bg-white text-black text-md font-medium rounded-lg shadow-sm hover:scale-105 transition-transform cursor-grab active:cursor-grabbing",
+                draggedIndex === i ? "opacity-50" : "opacity-100"
+              )}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        {/* The Pool (Draggable Items) */}
+        <div className="flex flex-wrap gap-4 justify-center items-start content-start min-h-[80px]">
+          {pool.map((item, i) => (
+            <button
+              key={`pool-${i}`}
+              onClick={() => moveToAnswer(i)}
+              className="px-3 py-3 bg-zinc-800 text-zinc-200 text-md border border-zinc-700 font-medium rounded-lg shadow-sm hover:bg-zinc-700 hover:scale-105 transition-all"
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        {/* Controls */}
+        <div className="flex justify-between py-2 items-center">
+          <span className={cn(
+            "text-lg font-medium transition-opacity",
+            status === "success" ? "text-green-400 opacity-100" :
+            status === "error" ? "text-red-400 opacity-100" : "opacity-0"
+          )}>
+            {status === "success" ? uiText.success[language] : uiText.error[language]}
+          </span>
+          
+          <button 
+            onClick={checkAnswer}
+            disabled={answerBox.length === 0}
+            className="px-4 py-2 bg-white text-black text-lg rounded-lg font-bold disabled:opacity-50 hover:bg-zinc-200 transition-colors"
+          >
+            {uiText.verifyBtn[language]}
+          </button>
+        </div>
       </div>
     </div>
   );

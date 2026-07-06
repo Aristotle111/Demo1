@@ -2,6 +2,9 @@
 
 import { useRef, useEffect, useState } from 'react';
 import './GooeyNav.css';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 /**
  * @param {Object} props
@@ -160,29 +163,31 @@ const GooeyNav = ({
   }, [activeIndex]);
 
   return (
-    <div className="gooey-nav-container" ref={containerRef}>
-      <nav>
-        <ul ref={navRef}>
-          {items.map((item, index) => {
-            const label = typeof item === 'string' ? item : item.label;
-            const href = typeof item === 'string' ? '#' : (item.href || '#');
+    <div className={inter.className}>
+      <div className="gooey-nav-container" ref={containerRef}>
+        <nav>
+          <ul ref={navRef}>
+            {items.map((item, index) => {
+              const label = typeof item === 'string' ? item : item.label;
+              const href = typeof item === 'string' ? '#' : (item.href || '#');
 
-            return (
-              <li key={index} className={activeIndex === index ? 'active' : ''}>
-                <a 
-                  href={href} 
-                  onClick={e => handleClick(e, index, label)} 
-                  onKeyDown={e => handleKeyDown(e, index, label)}
-                >
-                  {label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-      <span className="effect filter" ref={filterRef} />
-      <span className="effect text" ref={textRef} />
+              return (
+                <li key={index} className={activeIndex === index ? 'active' : ''}>
+                  <a 
+                    href={href} 
+                    onClick={e => handleClick(e, index, label)} 
+                    onKeyDown={e => handleKeyDown(e, index, label)}
+                  >
+                    {label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <span className="effect filter" ref={filterRef} />
+        <span className="effect text" ref={textRef} />
+      </div>
     </div>
   );
 };

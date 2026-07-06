@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 // Approximation function for standard normal cumulative distribution (CDF)
 function normalCDF(z: number): number {
@@ -82,91 +85,93 @@ export default function DynamicProblemCanvas({ taskData, language }: DynamicProb
     .replace("{{prob}}", mathData.prob.toFixed(4));
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 md:p-12 shadow-2xl backdrop-blur-md flex flex-col gap-6 text-left">
-      
-      {/* Problem Text & Controls Inline */}
-      <div className="text-zinc-300 text-xl md:text-2xl leading-loose font-light tracking-wide">
-        <span>{taskData.textStart}</span>
+    <div className={inter.className}>
+      <div className="w-full max-w-5xl mx-auto bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 md:p-12 shadow-2xl backdrop-blur-md flex flex-col gap-6 text-left">
         
-        <select
-          value={operator}
-          onChange={(e) => setOperator(e.target.value as Operator)}
-          className="mx-3 inline-block bg-zinc-950/80 border border-zinc-700 text-white text-lg rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all cursor-pointer appearance-none"
-        >
-          <option value="less">{uiText.less[language]}</option>
-          <option value="greater">{uiText.greater[language]}</option>
-          <option value="between">{uiText.between[language]}</option>
-        </select>
+        {/* Problem Text & Controls Inline */}
+        <div className="text-zinc-300 text-xl md:text-2xl leading-loose font-light tracking-wide">
+          <span>{taskData.textStart}</span>
+          
+          <select
+            value={operator}
+            onChange={(e) => setOperator(e.target.value as Operator)}
+            className="mx-3 inline-block bg-zinc-950/80 border border-zinc-700 text-white text-lg rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all cursor-pointer appearance-none"
+          >
+            <option value="less">{uiText.less[language]}</option>
+            <option value="greater">{uiText.greater[language]}</option>
+            <option value="between">{uiText.between[language]}</option>
+          </select>
 
-        <input
-          type="number"
-          step={taskData.increment}
-          value={val1}
-          onChange={(e) => setVal1(parseFloat(e.target.value))}
-          className="mx-2 inline-block w-24 bg-zinc-950/80 border border-zinc-700 text-white text-lg rounded-lg px-3 py-1.5 outline-none text-center focus:border-blue-400 transition-all"
-        />
+          <input
+            type="number"
+            step={taskData.increment}
+            value={val1}
+            onChange={(e) => setVal1(parseFloat(e.target.value))}
+            className="mx-2 inline-block w-24 bg-zinc-950/80 border border-zinc-700 text-white text-lg rounded-lg px-3 py-1.5 outline-none text-center focus:border-blue-400 transition-all"
+          />
 
-        {operator === "between" && (
-          <>
-            <span className="mx-2">{uiText.and[language]}</span>
-            <input
-              type="number"
-              step={taskData.increment}
-              value={val2}
-              onChange={(e) => setVal2(parseFloat(e.target.value))}
-              className="mx-2 inline-block w-24 bg-zinc-950/80 border border-zinc-700 text-white text-lg rounded-lg px-3 py-1.5 outline-none text-center focus:border-blue-400 transition-all"
-            />
-          </>
-        )}
-        
-        <span>{taskData.textEnd}</span>
-      </div>
+          {operator === "between" && (
+            <>
+              <span className="mx-2">{uiText.and[language]}</span>
+              <input
+                type="number"
+                step={taskData.increment}
+                value={val2}
+                onChange={(e) => setVal2(parseFloat(e.target.value))}
+                className="mx-2 inline-block w-24 bg-zinc-950/80 border border-zinc-700 text-white text-lg rounded-lg px-3 py-1.5 outline-none text-center focus:border-blue-400 transition-all"
+              />
+            </>
+          )}
+          
+          <span>{taskData.textEnd}</span>
+        </div>
 
-      {/* Dynamic Solution Accordion */}
-      <div className="mt-6">
-        <button
-          onClick={() => setShowSolution(!showSolution)}
-          className="w-full bg-zinc-800/50 hover:bg-zinc-800 text-zinc-200 font-medium py-4 px-6 rounded-xl flex justify-between items-center transition-all border border-zinc-700/60 shadow-sm"
-        >
-          <span className="text-lg tracking-wide">{showSolution ? uiText.hideSolution[language] : uiText.solutionBtn[language]}</span>
-          <span className={cn("text-2xl transition-transform duration-300", showSolution ? "rotate-45" : "")}>+</span>
-        </button>
+        {/* Dynamic Solution Accordion */}
+        <div className="mt-6">
+          <button
+            onClick={() => setShowSolution(!showSolution)}
+            className="w-full bg-zinc-800/50 hover:bg-zinc-800 text-zinc-200 font-medium py-4 px-6 rounded-xl flex justify-between items-center transition-all border border-zinc-700/60 shadow-sm"
+          >
+            <span className="text-lg tracking-wide">{showSolution ? uiText.hideSolution[language] : uiText.solutionBtn[language]}</span>
+            <span className={cn("text-2xl transition-transform duration-300", showSolution ? "rotate-45" : "")}>+</span>
+          </button>
 
-        {showSolution && (
-          <div className="mt-4 p-8 bg-black/40 border border-zinc-800/80 rounded-xl animate-fade-in flex flex-col gap-5">
-            
-            {/* Dynamic LaTeX / Math rendering */}
-            <div className="text-zinc-200 font-mono text-base md:text-lg overflow-x-auto whitespace-nowrap bg-zinc-950/50 p-6 rounded-lg border border-zinc-800 shadow-inner">
-              {operator !== "between" ? (
-                <>
-                  <p className="mb-4">
-                    {`z = \\frac{x - \\mu}{\\sigma} = \\frac{${val1} - ${taskData.mu}}{${taskData.sigma}} = ${mathData.z1.toFixed(2)}`}
-                  </p>
-                  <p>
-                    {`P(Z ${operator === 'greater' ? '>' : '<'} ${mathData.z1.toFixed(2)}) = ${mathData.prob.toFixed(4)}`}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="mb-3">
-                    {`z_1 = \\frac{${val1} - ${taskData.mu}}{${taskData.sigma}} = ${mathData.z1.toFixed(2)}`}
-                  </p>
-                  <p className="mb-5">
-                    {`z_2 = \\frac{${val2} - ${taskData.mu}}{${taskData.sigma}} = ${mathData.z2.toFixed(2)}`}
-                  </p>
-                  <p>
-                    {`P(${mathData.lowerZ.toFixed(2)} < Z < ${mathData.upperZ.toFixed(2)}) = ${mathData.prob.toFixed(4)}`}
-                  </p>
-                </>
-              )}
+          {showSolution && (
+            <div className="mt-4 p-8 bg-black/40 border border-zinc-800/80 rounded-xl animate-fade-in flex flex-col gap-5">
+              
+              {/* Dynamic LaTeX / Math rendering */}
+              <div className="text-zinc-200 font-mono text-base md:text-lg overflow-x-auto whitespace-nowrap bg-zinc-950/50 p-6 rounded-lg border border-zinc-800 shadow-inner">
+                {operator !== "between" ? (
+                  <>
+                    <p className="mb-4">
+                      {`z = \\frac{x - \\mu}{\\sigma} = \\frac{${val1} - ${taskData.mu}}{${taskData.sigma}} = ${mathData.z1.toFixed(2)}`}
+                    </p>
+                    <p>
+                      {`P(Z ${operator === 'greater' ? '>' : '<'} ${mathData.z1.toFixed(2)}) = ${mathData.prob.toFixed(4)}`}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mb-3">
+                      {`z_1 = \\frac{${val1} - ${taskData.mu}}{${taskData.sigma}} = ${mathData.z1.toFixed(2)}`}
+                    </p>
+                    <p className="mb-5">
+                      {`z_2 = \\frac{${val2} - ${taskData.mu}}{${taskData.sigma}} = ${mathData.z2.toFixed(2)}`}
+                    </p>
+                    <p>
+                      {`P(${mathData.lowerZ.toFixed(2)} < Z < ${mathData.upperZ.toFixed(2)}) = ${mathData.prob.toFixed(4)}`}
+                    </p>
+                  </>
+                )}
+              </div>
+
+              {/* Explanation Text */}
+              <p className="text-zinc-400 text-lg font-light tracking-wide leading-relaxed">
+                {explanationString}
+              </p>
             </div>
-
-            {/* Explanation Text */}
-            <p className="text-zinc-400 text-lg font-light tracking-wide leading-relaxed">
-              {explanationString}
-            </p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
