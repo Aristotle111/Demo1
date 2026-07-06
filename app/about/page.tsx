@@ -47,8 +47,8 @@ const App = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
 
   const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.45 });
-  const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.05 });
-  const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.1 });
+  const [playLanguageClick] = useSound('/sounds/language_Click.mp3', { volume: 0.15 });
+  const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.2 });
 
   interface ContentItem {
     title: Record<Language, string>;
@@ -145,7 +145,7 @@ const App = () => {
           EN: {
             prompt: "A random sample of frogs yields a sample mean. The population standard deviation is known, and the sample size is large. We want to determine whether the average weight differs from 12g. The test statistic is z = -2.25. At a significance level of 5%, the critical region is below -1.96 or above 1.96.",
             options: ["Since", "suggests no deviation from 12g.", "conclude that the population mean is not 12g.", "z = -2.25", "falls in the rejection region", "we reject H₀.", "z = 0", "There is sufficient evidence to", "We used a t-test."],
-            correctOrder: ["Since", "z = -2.25", "falls in the rejection region", "we reject H₀.", "There is enough evidence to", "conclude that the population mean is not 12g."]
+            correctOrder: ["Since", "z = -2.25", "falls in the rejection region", "we reject H₀.", "There is sufficient evidence to", "conclude that the population mean is not 12g."]
           },
           FR: {
             prompt: "Un échantillon aléatoire de grenouilles donne une moyenne observée. L’écart-type de la population est connu et la taille de l’échantillon est grande. Nous cherchons à déterminer si le poids moyen diffère de 12 g. La statistique de test est z = -2,25. Pour un seuil de 5 %, la région critique se trouve en dessous de -1,96 ou au-dessus de 1,96.",

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Inter } from 'next/font/google';
+import useSound from 'use-sound';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -41,6 +42,10 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
   const [status, setStatus] = useState<"success" | "error" | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
+  const [playClick] = useSound('/sounds/simple_Click.mp3', { volume: 0.15 });
+  const [playCorrect] = useSound('/sounds/correct_Answer.mp3', { volume: 0.08 });
+  const [playIncorrect] = useSound('/sounds/incorrect_Answer.mp3', { volume: 0.3 });
+
   useEffect(() => {
     if (taskData) {
       const shuffled = [...taskData.options].sort(() => Math.random() - 0.5);
@@ -53,6 +58,7 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
   if (!taskData) return null;
 
   const moveToAnswer = (index: number) => {
+    playClick();
     const item = pool[index];
     setPool(pool.filter((_, i) => i !== index));
     setAnswerBox([...answerBox, item]);
@@ -60,6 +66,7 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
   };
 
   const moveToPool = (index: number) => {
+    playClick();
     const item = answerBox[index];
     setAnswerBox(answerBox.filter((_, i) => i !== index));
     setPool([...pool, item]);
@@ -83,6 +90,7 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
     const draggedItem = newAnswerBox.splice(draggedIndex, 1)[0];
     newAnswerBox.splice(dropIndex, 0, draggedItem);
 
+    playClick();
     setAnswerBox(newAnswerBox);
     setDraggedIndex(null);
     setStatus(null);
@@ -90,6 +98,13 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
 
   const checkAnswer = () => {
     const isCorrect = answerBox.join("") === taskData.correctOrder.join("");
+
+    if (isCorrect) {
+      playCorrect();
+    } else {
+      playIncorrect();
+    }
+
     setStatus(isCorrect ? "success" : "error");
   };
 
