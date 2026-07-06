@@ -26,10 +26,10 @@ const CardNav = ({
   const navRef = useRef(null);
   const cardsRef = useRef([]);
   const tlRef = useRef(null);
-  const [playMenuOpen] = useSound('/sounds/menu_Open.mp3', { volume: 0.05 });
+  const [playMenuOpen] = useSound('/sounds/menu_Open3.mp3', { volume: 0.05 });
   const [playHomeClick] = useSound('/sounds/home_Click.mp3', { volume: 0.1 });
   const [playMenuHover] = useSound('/sounds/menu_Hover2.mp3', { volume: 0.05 });
-  const [playMenuClose] = useSound('/sounds/menu_Click2.mp3', { volume: 0.1 });
+  const [playMenuClose] = useSound('/sounds/menu_Click2.mp3', { volume: 0.45 });
 
   const isExpandedRef = useRef(isExpanded);
   useLayoutEffect(() => {

@@ -42,7 +42,7 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
   const [status, setStatus] = useState<"success" | "error" | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
-  const [playClick] = useSound('/sounds/simple_Click.mp3', { volume: 0.15 });
+  const [playClick] = useSound('/sounds/simple_Click.mp3', { volume: 0.1 });
   const [playCorrect] = useSound('/sounds/correct_Answer.mp3', { volume: 0.08 });
   const [playIncorrect] = useSound('/sounds/incorrect_Answer.mp3', { volume: 0.3 });
 

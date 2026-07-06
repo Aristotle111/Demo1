@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Inter } from 'next/font/google';
+import useSound from 'use-sound';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -51,12 +52,21 @@ export default function DynamicProblemCanvas({ taskData, language }: DynamicProb
   const [val2, setVal2] = useState<number>(taskData.defaultNumber + taskData.increment);
   const [showSolution, setShowSolution] = useState<boolean>(false);
 
+  const [playRevealSolution] = useSound('/sounds/solution_Reveal.mp3', { volume: 0.1 });
+
   // Reset values if the task data changes (e.g., changing difficulties)
   useEffect(() => {
     setVal1(taskData.defaultNumber);
     setVal2(taskData.defaultNumber + taskData.increment);
     setShowSolution(false);
   }, [taskData]);
+
+  const handleToggleSolution = () => {
+    if (!showSolution) {
+      playRevealSolution();
+    }
+    setShowSolution(!showSolution);
+  };
 
   // Real-time calculations
   const mathData = useMemo(() => {
@@ -129,7 +139,7 @@ export default function DynamicProblemCanvas({ taskData, language }: DynamicProb
         {/* Dynamic Solution Accordion */}
         <div className="mt-6">
           <button
-            onClick={() => setShowSolution(!showSolution)}
+            onClick={handleToggleSolution}
             className="w-full bg-zinc-800/50 hover:bg-zinc-800 text-zinc-200 font-medium py-4 px-6 rounded-xl flex justify-between items-center transition-all border border-zinc-700/60 shadow-sm"
           >
             <span className="text-lg tracking-wide">{showSolution ? uiText.hideSolution[language] : uiText.solutionBtn[language]}</span>
