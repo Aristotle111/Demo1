@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Inter } from 'next/font/google';
+import useSound from 'use-sound';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -38,9 +39,29 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
   const [showSolution, setShowSolution] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const [playOpenTranslation] = useSound('/sounds/open_Translation.mp3', { volume: 0.1 });
+  const [playCloseTranslation] = useSound('/sounds/close_Translation.mp3', { volume: 0.05 });
+  const [playRevealSolution] = useSound('/sounds/solution_Reveal.mp3', { volume: 0.1 });
+
   useEffect(() => {
     setShowSolution(false);
   }, [taskData]);
+
+  const handleToggleExpand = () => {
+    if (isExpanded) {
+      playCloseTranslation();
+    } else {
+      playOpenTranslation();
+    }
+    setIsExpanded(!isExpanded);
+  };
+
+  const handleToggleSolution = () => {
+    if (!showSolution) {
+      playRevealSolution();
+    }
+    setShowSolution(!showSolution);
+  };
 
   const oppositeLanguage = currentLanguage === "EN" ? "FR" : "EN";
   const primarySentences = taskData.sentences[currentLanguage];
@@ -118,7 +139,7 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
         {/* Expand/Collapse Toggle (Moved between text and solution) */}
         <div className="flex justify-center mt-6 mb-2">
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={handleToggleExpand}
             className="flex items-center gap-2 px-6 py-2 rounded-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 transition-all border border-zinc-700"
           >
             <span className="text-sm font-medium tracking-wider uppercase">
@@ -135,7 +156,7 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
 
         {/* Solution Reveal Box */}
         <div 
-          onClick={() => setShowSolution(!showSolution)}
+          onClick={handleToggleSolution}
           className={cn(
             "cursor-pointer w-full rounded-xl p-8 border transition-all duration-500 ease-in-out flex items-center justify-center text-center",
             showSolution 
