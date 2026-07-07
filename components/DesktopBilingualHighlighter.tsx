@@ -68,7 +68,7 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
   const secondarySentences = taskData.sentences[oppositeLanguage];
 
   return (
-    <div className={inter.className}>
+    <div className={`${inter.className}`}>
       <div 
         className={cn(
           "w-full mx-auto bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 md:p-6 lg:p-10 shadow-2xl backdrop-blur-md flex flex-col gap-4 md:gap-6 text-left transition-all duration-700 ease-in-out",

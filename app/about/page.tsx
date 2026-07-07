@@ -333,9 +333,10 @@ const App = () => {
         )}
       </div>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 text-center animate-fade-in pb-40 pt-8">
+      <main className="relative z-10 flex-1 flex flex-col items-center w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 text-center animate-fade-in pb-65">
         
-        <div className="w-full my-auto flex flex-col items-center">
+        <div className="w-full flex-grow flex flex-col items-center justify-center">
+          <div className="mt-20 lg:mt-24" />
           {activeIndex !== null && (
             <>
               {activeIndex !== 1 && activeIndex !== 2 && (

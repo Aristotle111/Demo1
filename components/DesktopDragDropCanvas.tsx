@@ -109,7 +109,7 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
   };
 
   return (
-  <div className={inter.className}>
+  <div className={`${inter.className}`}>
     <div className="w-full max-w-4xl mx-auto bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 md:p-6 lg:p-8 shadow-xl backdrop-blur-md flex flex-col gap-5 lg:gap-6">
       <p className="text-zinc-300 text-base lg:text-lg leading-relaxed font-light text-left tracking-wide">
         {taskData.prompt}

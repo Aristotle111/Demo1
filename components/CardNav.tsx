@@ -174,10 +174,9 @@ const CardNav = ({
     <div className={`card-nav-container ${className} ${isMobile ? 'w-full' : ''}`}>
       <nav ref={navRef} className={`card-nav ${isHamburgerOpen ? 'open' : ''}`} style={{ backgroundColor: baseColor }}>
         
-        {/* The absolute positioning pattern guarantees perfect dead-center alignment */}
         <div className={`card-nav-top relative flex flex-row items-center justify-between ${isMobile ? 'w-full' : ''}`}>
           
-          {/* 1. LEFT: Hamburger */}
+          {/* Hamburger */}
           <div className="z-10 flex-shrink-0">
             <div
               className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
@@ -192,14 +191,14 @@ const CardNav = ({
             </div>
           </div>
 
-          {/* 2. CENTER: Logo (Absolutely positioned to ignore flex spacing entirely) */}
+          {/* Logo */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none whitespace-nowrap">
             <div className="logo-container text-center pointer-events-auto">
               <span className="logo-text">{logoAlt}</span>
             </div>
           </div>
 
-          {/* 3. RIGHT: Action Slot */}
+          {/* Action Slot */}
           <div className="z-10 flex-shrink-0">
             {isMobile ? (
               <div className="mobile-action-container pr-2">

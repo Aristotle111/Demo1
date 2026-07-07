@@ -91,7 +91,7 @@ export default function DynamicProblemCanvas({ taskData, language }: DynamicProb
     .replace("{{prob}}", mathData.prob.toFixed(4));
 
   return (
-    <div className={inter.className}>
+    <div className={`${inter.className}`}>
       <div className="w-full mx-auto max-w-3xl lg:max-w-4xl bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 md:p-8 lg:p-10 shadow-xl backdrop-blur-md flex flex-col gap-6 text-left">
         <div className="text-zinc-300 text-base md:text-lg lg:text-xl leading-[2.5rem] font-light tracking-wide">
           <span>{taskData.textStart}</span>
