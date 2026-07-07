@@ -117,9 +117,9 @@ export default function MobileBilingualHighlighter({ taskData, currentLanguage }
         <div className="flex justify-center w-full">
           <button
             onClick={handleToggleExpand}
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-zinc-800/80 active:bg-zinc-700 text-zinc-300 transition-all border border-zinc-700"
+            className="flex items-center justify-center gap-2 w-full py-2 rounded-xl bg-zinc-800/80 active:bg-zinc-700 text-zinc-300 transition-all border border-zinc-700"
           >
-            <span className="text-sm font-medium tracking-wider uppercase">
+            <span className="text-xs font-medium tracking-wider uppercase">
               {isExpanded ? uiText.hide[currentLanguage] : uiText.compare[currentLanguage]}
             </span>
             <svg 
@@ -135,23 +135,23 @@ export default function MobileBilingualHighlighter({ taskData, currentLanguage }
         <div 
           onClick={handleToggleSolution}
           className={cn(
-            "cursor-pointer w-full rounded-xl p-6 border transition-all duration-500 ease-in-out flex items-center justify-center text-center",
+            "cursor-pointer w-full rounded-xl p-4 border transition-all duration-500 ease-in-out flex items-center justify-center text-center",
             showSolution 
               ? "bg-black/40 border-zinc-700 shadow-inner" 
               : "bg-zinc-800/50 active:bg-zinc-800/80 border-zinc-700/60 shadow-sm"
           )}
         >
-          <div className="transition-opacity duration-500 opacity-100">
+        <div className="transition-opacity duration-500 opacity-100 w-full">
             {!showSolution ? (
-              <span className="text-zinc-400 font-medium tracking-wide uppercase text-sm">
-                Reveal Solution
-              </span>
+            <span className="text-zinc-400 font-medium tracking-wide uppercase text-xs">
+                {currentLanguage === "EN" ? "Reveal Solution" : "Révéler la Solution"}
+            </span>
             ) : (
-              <p className="text-zinc-200 text-base font-light tracking-wide leading-relaxed animate-in fade-in duration-700">
+            <p className="text-zinc-200 text-sm font-light tracking-wide leading-relaxed animate-in fade-in duration-700">
                 {taskData.solution[currentLanguage]}
-              </p>
+            </p>
             )}
-          </div>
+        </div>
         </div>
       </div>
     </div>

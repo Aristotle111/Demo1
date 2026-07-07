@@ -137,7 +137,7 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
             onClick={handleToggleExpand}
             className="flex items-center gap-2 px-6 py-2 rounded-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 transition-all border border-zinc-700"
           >
-            <span className="text-sm font-medium tracking-wider uppercase">
+            <span className="text-xs font-medium tracking-wider uppercase">
               {isExpanded ? uiText.hide[currentLanguage] : uiText.compare[currentLanguage]}
             </span>
             <svg 
@@ -161,11 +161,11 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
         >
           <div className="transition-opacity duration-500 opacity-100">
             {!showSolution ? (
-              <span className="text-zinc-400 font-medium tracking-wide uppercase text-sm lg:text-base">
-                Reveal Solution
+              <span className="text-zinc-400 font-medium tracking-wide uppercase text-base">
+                {currentLanguage === "EN" ? "Reveal Solution" : "Révéler la Solution"}
               </span>
             ) : (
-              <p className="text-zinc-200 text-base lg:text-lg font-light tracking-wide leading-relaxed animate-in fade-in duration-700">
+              <p className="text-zinc-200 text-base md:text-base font-light tracking-wide leading-relaxed animate-in fade-in duration-700">
                 {taskData.solution[currentLanguage]}
               </p>
             )}
