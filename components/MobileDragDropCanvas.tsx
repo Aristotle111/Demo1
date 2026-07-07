@@ -41,9 +41,9 @@ export default function MobileDragDropCanvas({ taskData, language }: DragDropCan
   const [answerBox, setAnswerBox] = useState<string[]>([]);
   const [status, setStatus] = useState<"success" | "error" | null>(null);
 
-  const [playClick] = useSound('/sounds/simple_Click.mp3', { volume: 0.1 });
-  const [playCorrect] = useSound('/sounds/correct_Answer.mp3', { volume: 0.08 });
-  const [playIncorrect] = useSound('/sounds/incorrect_Answer.mp3', { volume: 0.3 });
+  const [playClick] = useSound('/sounds/simple_Click.mp3', { volume: 0.35 });
+  const [playCorrect] = useSound('/sounds/correct_Answer.mp3', { volume: 0.35 });
+  const [playIncorrect] = useSound('/sounds/incorrect_Answer.mp3', { volume: 0.55 });
 
   useEffect(() => {
     if (taskData) {

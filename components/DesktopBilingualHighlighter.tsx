@@ -39,9 +39,9 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
   const [showSolution, setShowSolution] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const [playOpenTranslation] = useSound('/sounds/open_Translation.mp3', { volume: 0.1 });
-  const [playCloseTranslation] = useSound('/sounds/close_Translation.mp3', { volume: 0.05 });
-  const [playRevealSolution] = useSound('/sounds/solution_Reveal.mp3', { volume: 0.1 });
+  const [playOpenTranslation] = useSound('/sounds/open_Translation.mp3', { volume: 0.45 });
+  const [playCloseTranslation] = useSound('/sounds/close_Translation.mp3', { volume: 0.35 });
+  const [playRevealSolution] = useSound('/sounds/solution_Reveal.mp3', { volume: 0.45 });
 
   useEffect(() => {
     setShowSolution(false);

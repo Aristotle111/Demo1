@@ -52,7 +52,7 @@ export default function MobileDynamicProblemCanvas({ taskData, language }: Dynam
   const [val2, setVal2] = useState<number>(taskData.defaultNumber + taskData.increment);
   const [showSolution, setShowSolution] = useState<boolean>(false);
 
-  const [playRevealSolution] = useSound('/sounds/solution_Reveal.mp3', { volume: 0.1 });
+  const [playRevealSolution] = useSound('/sounds/solution_Reveal.mp3', { volume: 0.55 });
 
   useEffect(() => {
     setVal1(taskData.defaultNumber);
