@@ -51,7 +51,7 @@ const App = () => {
 
   const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.45 });
   const [playLanguageClick] = useSound('/sounds/language_Click.mp3', { volume: 0.15 });
-  const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.2 });
+  const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.35 });
 
   interface ContentItem {
     title: Record<Language, string>;
@@ -302,7 +302,7 @@ const App = () => {
   
   return (
     <div className="relative min-h-screen flex flex-col w-full overflow-x-hidden bg-black">
-      <GridPattern width={60} height={60} x={-1} y={-1} className={cn("stroke-white/5 fixed inset-0 pointer-events-none")} />
+      <GridPattern width={60} height={60} x={-1} y={-1} className={cn("stroke-white/10 fixed inset-0 pointer-events-none")} />
       
       <div className="relative z-50 flex items-start justify-between w-full p-4 lg:p-6 shrink-0 pointer-events-none">
         <div className="pointer-events-auto">
