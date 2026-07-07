@@ -1,11 +1,33 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, ReactNode } from 'react';
 import { gsap } from 'gsap';
-import { GoArrowUpRight } from 'react-icons/go';
 import Link from 'next/link';
 import useSound from 'use-sound';
 import './CardNav.css';
+
+interface CardNavProps {
+  logo?: ReactNode;
+  logoAlt?: string;
+  items: Array<{
+    label: string;
+    description?: string;
+    bgColor: string;
+    textColor: string;
+    path?: string;
+  }>;
+  homeLabel?: string;
+  className?: string;
+  ease?: string;
+  baseColor?: string;
+  menuColor?: string;
+  buttonBgColor?: string;
+  buttonTextColor?: string;
+  defaultOpen?: boolean;
+  onItemClick?: (index: number) => void;
+  isMobile: boolean;
+  mobileActionComponent?: ReactNode; 
+}
 
 const CardNav = ({
   logo,
@@ -18,16 +40,17 @@ const CardNav = ({
   menuColor,
   buttonBgColor,
   buttonTextColor,
-  defaultOpen,
+  defaultOpen = false,
   onItemClick,
   isMobile,
   mobileActionComponent = null
-}) => {
+}: CardNavProps) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(defaultOpen);
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
-  const navRef = useRef(null);
-  const cardsRef = useRef([]);
-  const tlRef = useRef(null);
+  const navRef = useRef<HTMLElement>(null);
+  const cardsRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  
   const [playMenuOpen] = useSound('/sounds/menu_Open3.mp3', { volume: 0.45 });
   const [playHomeClick] = useSound('/sounds/home_Click.mp3', { volume: 0.25 });
   const [playMenuHover] = useSound('/sounds/menu_Hover2.mp3', { volume: 0.35 });
@@ -41,10 +64,7 @@ const CardNav = ({
   const calculateHeight = () => {
     const navEl = navRef.current;
     if (!navEl) return 260;
-
-    if (isMobile) {
-      return window.innerHeight * 0.90;
-    }
+    if (isMobile) return window.innerHeight * 0.90;
     return 260;
   };
 
@@ -146,45 +166,57 @@ const CardNav = ({
     tl.reverse();
   };
 
-  const setCardRef = i => el => {
+  const setCardRef = (i: number) => (el: HTMLAnchorElement | null) => {
     if (el) cardsRef.current[i] = el;
   };
 
   return (
     <div className={`card-nav-container ${className} ${isMobile ? 'w-full' : ''}`}>
       <nav ref={navRef} className={`card-nav ${isHamburgerOpen ? 'open' : ''}`} style={{ backgroundColor: baseColor }}>
-        <div className={`card-nav-top flex items-center justify-between ${isMobile ? 'w-full' : ''}`}>
-          <div
-            className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
-            onClick={toggleMenu}
-            role="button"
-            aria-label={isExpanded ? 'Close menu' : 'Open menu'}
-            tabIndex={0}
-            style={{ color: menuColor || '#000' }}
-          >
-            <div className="hamburger-line" />
-            <div className="hamburger-line" />
-          </div>
-
-          <div className="logo-container">
-            <span className="logo-text">{logoAlt}</span>
-          </div>
-
-          {/* Conditional Rendering for Mobile vs Desktop Action Button */}
-          {isMobile ? (
-            <div className="mobile-action-container pr-2">
-              {mobileActionComponent}
-            </div>
-          ) : (
-            <Link
-              href="/"
-              className="card-nav-cta-button"
-              style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
-              onClick={() => playHomeClick()}
+        
+        {/* The absolute positioning pattern guarantees perfect dead-center alignment */}
+        <div className={`card-nav-top relative flex flex-row items-center justify-between ${isMobile ? 'w-full' : ''}`}>
+          
+          {/* 1. LEFT: Hamburger */}
+          <div className="z-10 flex-shrink-0">
+            <div
+              className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
+              onClick={toggleMenu}
+              role="button"
+              aria-label={isExpanded ? 'Close menu' : 'Open menu'}
+              tabIndex={0}
+              style={{ color: menuColor || '#000' }}
             >
-              {homeLabel}
-            </Link>
-          )}
+              <div className="hamburger-line" />
+              <div className="hamburger-line" />
+            </div>
+          </div>
+
+          {/* 2. CENTER: Logo (Absolutely positioned to ignore flex spacing entirely) */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none whitespace-nowrap">
+            <div className="logo-container text-center pointer-events-auto">
+              <span className="logo-text">{logoAlt}</span>
+            </div>
+          </div>
+
+          {/* 3. RIGHT: Action Slot */}
+          <div className="z-10 flex-shrink-0">
+            {isMobile ? (
+              <div className="mobile-action-container pr-2">
+                {mobileActionComponent}
+              </div>
+            ) : (
+              <Link
+                href="/"
+                className="card-nav-cta-button"
+                style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
+                onClick={() => playHomeClick()}
+              >
+                {homeLabel}
+              </Link>
+            )}
+          </div>
+          
         </div>
 
         <div className="card-nav-content" aria-hidden={!isExpanded}>

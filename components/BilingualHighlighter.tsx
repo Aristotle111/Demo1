@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import DesktopBilingualHighlighter from "./DesktopBilingualHighlighter";
 import MobileBilingualHighlighter from "./MobileBilingualHighlighter";
 import { useWindowSize } from "@/lib/useWindowSize";
@@ -21,8 +22,13 @@ export interface BilingualHighlighterProps {
 
 export default function BilingualHighlighter({ taskData, currentLanguage }: BilingualHighlighterProps) {
   const isMobile = useWindowSize();
+  const [mounted, setMounted] = useState(false);
 
-  if (!taskData) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !taskData) return null;
 
   return isMobile ? (
     <MobileBilingualHighlighter taskData={taskData} currentLanguage={currentLanguage} />

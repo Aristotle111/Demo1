@@ -50,7 +50,7 @@ const App = () => {
   const isMobile = useWindowSize();
 
   const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.75 });
-  const [playLanguageClick] = useSound('/sounds/language_Click.mp3', { volume: 0.55 });
+  const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.55 });
   const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.65 });
 
   interface ContentItem {
@@ -68,7 +68,7 @@ const App = () => {
       title: { EN: "Binomial Probability Problem", FR: "Problème de Probabilité Binomiale" },
       beginner: { EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.", FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?" },
       intermediate: { EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.", FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence." },
-      advanced: { EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.", FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?" },
+      advanced: { EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.", FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?" },
       bilingualReadingData: {
         beginner: {
           sentences: {
@@ -139,9 +139,9 @@ const App = () => {
             correctOrder: ["Because", "z = -2.25", "is less than -1.96", "we reject the null hypothesis.", "There is enough evidence to", "say the mean is different from 12g."]
           },
           FR: {
-            prompt: "Nous testons si le poids moyen d’une certaine espèce de grenouille est différent de 12 g. L’écart-type de la population est connu. L’échantillon provient d’une distribution normale. La statistique de test est z = -2,25. Le niveau de signification est de 5 %, et les valeurs critiques sont -1,96 et 1,96.",
-            options: ["on rejette l’hypothèse nulle.", "Il n’y a pas assez de preuves.", "z = -2,25", "La moyenne est égale à 12 g.", "dire que la moyenne est différente de 12 g.", "on ne rejette pas l’hypothèse nulle.", "Parce que", "Il y a assez de preuves pour", "est plus petit que -1,96"],
-            correctOrder: ["Parce que", "z = -2,25", "est plus petit que -1,96", "on rejette l’hypothèse nulle.", "Il y a assez de preuves pour", "dire que la moyenne est différente de 12 g."]
+            prompt: "Nous testons si le poids moyen d’une certaine espèce de grenouille est différent de 12 g. L’écart-type de la population est connu. L’échantillon provient d’une distribution normale. La statistique de test est z = -2,25. Le niveau de signification est de 5 %, et les valeurs critiques sont -1,96 et 1,96.",
+            options: ["on rejette l’hypothèse nulle.", "Il n’y a pas assez de preuves.", "z = -2,25", "La moyenne est égale à 12 g.", "dire que la moyenne est différente de 12 g.", "on ne rejette pas l’hypothèse nulle.", "Parce que", "Il y a assez de preuves pour", "est plus petit que -1,96"],
+            correctOrder: ["Parce que", "z = -2,25", "est plus petit que -1,96", "on rejette l’hypothèse nulle.", "Il y a assez de preuves pour", "dire que la moyenne est différente de 12 g."]
           }
         },
         intermediate: {
@@ -151,9 +151,9 @@ const App = () => {
             correctOrder: ["Since", "z = -2.25", "falls in the rejection region", "we reject H₀.", "There is sufficient evidence to", "conclude that the population mean is not 12g."]
           },
           FR: {
-            prompt: "Un échantillon aléatoire de grenouilles donne une moyenne observée. L’écart-type de la population est connu et la taille de l’échantillon est grande. Nous cherchons à déterminer si le poids moyen diffère de 12 g. La statistique de test est z = -2,25. Pour un seuil de 5 %, la région critique se trouve en dessous de -1,96 ou au-dessus de 1,96.",
-            options: ["on rejette l’hypothèse nulle.", "Il n’y a pas assez de preuves.", "z = -2,25", "La moyenne est égale à 12 g.", "dire que la moyenne est différente de 12 g.", "on ne rejette pas l’hypothèse nulle.", "Parce que", "Il y a assez de preuves pour", "est plus petit que -1,96"],
-            correctOrder: ["Puisque", "z = -2,25", "tombe dans la région critique", "on rejette H₀.", "Il y a suffisamment de preuves pour", "conclure que la moyenne de la population n’est pas 12 g."]
+            prompt: "Un échantillon aléatoire de grenouilles donne une moyenne observée. L’écart-type de la population est connu et la taille de l’échantillon est grande. Nous cherchons à déterminer si le poids moyen diffère de 12 g. La statistique de test est z = -2,25. Pour un seuil de 5 %, la région critique se trouve en dessous de -1,96 ou au-dessus de 1,96.",
+            options: ["on rejette l’hypothèse nulle.", "Il n’y a pas assez de preuves.", "z = -2,25", "La moyenne est égale à 12 g.", "dire que la moyenne est différente de 12 g.", "on ne rejette pas l’hypothèse nulle.", "Parce que", "Il y a assez de preuves pour", "est plus petit que -1,96"],
+            correctOrder: ["Puisque", "z = -2,25", "tombe dans la région critique", "on rejette H₀.", "Il y a suffisamment de preuves pour", "conclure que la moyenne de la population n’est pas 12 g."]
           }
         },
         advanced: {
@@ -163,9 +163,9 @@ const App = () => {
             correctOrder: ["Given that", "z = -2.25", "lies beyond the critical boundary of -1.96", "we reject the null hypothesis (H₀).", "This supports the inference that", "μ ≠ 12g at the 5% significance level."]
           },
           FR: {
-            prompt: "Un échantillon prélevé dans une population à variance connue est utilisé pour évaluer si la moyenne réelle du poids d’une espèce de grenouille est égale à 12 g. La distribution de l’échantillonnage est supposée normale. Avec une statistique de test z = -2,25 et un niveau de signification α = 0,05, les bornes critiques sont ±1,96.",
-            options: ["Étant donné que", "z = -2,25", "dépasse la borne critique de -1,96", "on rejette l’hypothèse nulle (H₀).", "Cela soutient l’inférence que", " μ ≠ 12 g au niveau de signification de 5 %.", "Cela suggère l’absence de déviation significative de μ = 12 g.", "On ne peut pas rejeter l’hypothèse nulle.", "z est dans la région non critique."],
-            correctOrder: ["Étant donné que", "z = -2,25", "dépasse la borne critique de -1,96", "on rejette l’hypothèse nulle (H₀).", "Cela soutient l’inférence que", "μ ≠ 12 g au niveau de signification de 5 %."]
+            prompt: "Un échantillon prélevé dans une population à variance connue est utilisé pour évaluer si la moyenne réelle du poids d’une espèce de grenouille est égale à 12 g. La distribution de l’échantillonnage est supposée normale. Avec une statistique de test z = -2,25 et un niveau de signification α = 0,05, les bornes critiques sont ±1,96.",
+            options: ["Étant donné que", "z = -2,25", "dépasse la borne critique de -1,96", "on rejette l’hypothèse nulle (H₀).", "Cela soutient l’inférence que", " μ ≠ 12 g au niveau de signification de 5 %.", "Cela suggère l’absence de déviation significative de μ = 12 g.", "On ne peut pas rejeter l’hypothèse nulle.", "z est dans la région non critique."],
+            correctOrder: ["Étant donné que", "z = -2,25", "dépasse la borne critique de -1,96", "on rejette l’hypothèse nulle (H₀).", "Cela soutient l’inférence que", "μ ≠ 12 g au niveau de signification de 5 %."]
           }
         }
       },
@@ -317,6 +317,7 @@ const App = () => {
             buttonTextColor="#000000"
             ease="power3.out"
             isMobile={isMobile}
+            mobileActionComponent={<LanguageToggle onChange={handleLanguageChange} />}
             onItemClick={(index: number) => {
               playMenuClick();
               setActiveIndex(index);
