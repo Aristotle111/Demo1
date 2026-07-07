@@ -43,8 +43,8 @@ export default function DragDropCanvas({ taskData, language }: DragDropCanvasPro
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const [playClick] = useSound('/sounds/simple_Click.mp3', { volume: 0.35 });
-  const [playCorrect] = useSound('/sounds/correct_Answer.mp3', { volume: 0.35 });
-  const [playIncorrect] = useSound('/sounds/incorrect_Answer.mp3', { volume: 0.55 });
+  const [playCorrect] = useSound('/sounds/correct_Answer.mp3', { volume: 0.55 });
+  const [playIncorrect] = useSound('/sounds/incorrect_Answer.mp3', { volume: 0.65 });
 
   useEffect(() => {
     if (taskData) {

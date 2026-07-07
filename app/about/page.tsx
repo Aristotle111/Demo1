@@ -49,9 +49,9 @@ const App = () => {
 
   const isMobile = useWindowSize();
 
-  const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.65 });
+  const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.75 });
   const [playLanguageClick] = useSound('/sounds/language_Click.mp3', { volume: 0.55 });
-  const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.55 });
+  const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.65 });
 
   interface ContentItem {
     title: Record<Language, string>;
