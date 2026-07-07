@@ -8,10 +8,11 @@ import GridPattern from '@/components/ui/grid-pattern';
 import GooeyNav from '@/components/GooeyNav';
 import { cn } from "@/lib/utils";
 import { Space_Grotesk, Inter } from 'next/font/google';
-import DragDropCanvas, { DragDropTask } from '@/components/DragDropCanvas';
-import DynamicProblemCanvas, { DynamicProblemTask } from '@/components/DynamicProblemCanvas';
-import BilingualHighlighter, { BilingualTask } from '@/components/BilingualHighlighter';
+import DragDropCanvas, { DragDropTask } from '@/components/DesktopDragDropCanvas';
+import DynamicProblemCanvas, { DynamicProblemTask } from '@/components/DesktopDynamicProblemCanvas';
+import BilingualHighlighter, { BilingualTask } from '@/components/DesktopBilingualHighlighter';
 import useSound from 'use-sound';
+import { useWindowSize } from "@/lib/useWindowSize";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 const inter = Inter({ subsets: ['latin'] });
@@ -45,6 +46,8 @@ const App = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [currentLanguage, setCurrentLanguage] = useState<Language>("EN");
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
+
+  const isMobile = useWindowSize();
 
   const [playMenuClick] = useSound('/sounds/menu_Click2.mp3', { volume: 0.45 });
   const [playLanguageClick] = useSound('/sounds/language_Click.mp3', { volume: 0.15 });
@@ -290,8 +293,6 @@ const App = () => {
     return currentProblem?.title[currentLanguage]; 
   };
 
-  
-
   const currentProblem = problems.length > 0 ? problems[0] : null;
   const dynamicProblemText = currentProblem ? currentProblem[difficulty][currentLanguage] : "";
   const currentGooeyItems = difficultyKeys.map(key => difficultyLabels[currentLanguage][key]);
@@ -300,10 +301,10 @@ const App = () => {
   const bilingualTask = currentProblem?.bilingualReadingData ? currentProblem.bilingualReadingData[difficulty] : null;
   
   return (
-    <div className="relative min-h-screen flex flex-col w-full overflow-hidden bg-black">
-      <GridPattern width={60} height={60} x={-1} y={-1} className={cn("stroke-white/5")} />
+    <div className="relative min-h-screen flex flex-col w-full overflow-x-hidden bg-black">
+      <GridPattern width={60} height={60} x={-1} y={-1} className={cn("stroke-white/5 fixed inset-0 pointer-events-none")} />
       
-      <div className="relative z-50 flex items-start justify-between w-full p-4 pointer-events-none">
+      <div className="relative z-50 flex items-start justify-between w-full p-4 lg:p-6 shrink-0 pointer-events-none">
         <div className="pointer-events-auto">
           <CardNav
             logo={null}
@@ -315,6 +316,7 @@ const App = () => {
             buttonBgColor="#3f3f3f"
             buttonTextColor="#000000"
             ease="power3.out"
+            isMobile={isMobile}
             onItemClick={(index: number) => {
               playMenuClick();
               setActiveIndex(index);
@@ -323,63 +325,71 @@ const App = () => {
           />
         </div>
 
-        <div className="pointer-events-auto mt-1">
-          <LanguageToggle onChange={handleLanguageChange} />
-        </div>
-      </div>
-
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-7xl w-full mx-auto px-6 text-center animate-fade-in pb-32">
-        {activeIndex !== null && (
-          <>
-            {activeIndex !== 1 && activeIndex !== 2 && (
-              <h1 className={cn("text-2xl md:text-5xl font-extrabold text-white tracking-tight mb-6 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
-                {displayTitle()}
-              </h1>
-            )}
-
-            {(() => {
-              switch (activeIndex) {
-                case 0:
-                  return (
-                    <div className="w-full bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 md:p-14 shadow-2xl backdrop-blur-md transition-all duration-300">
-                      <div className="animate-fade-in text-left">
-                        <p className={cn("text-zinc-300 text-xl md:text-2xl leading-loose tracking-wide font-light tracking-[0.1em]", inter.className)}>
-                          {dynamicProblemText}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                case 1:
-                  return dragDropTask ? <DragDropCanvas taskData={dragDropTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
-                case 2:
-                  return bilingualTask ? (
-                    <BilingualHighlighter taskData={bilingualTask} currentLanguage={currentLanguage} />
-                  ) : (
-                    <div className="text-zinc-500 py-10">Data not available</div>
-                  );
-                case 3:
-                  return dynamicTask ? <DynamicProblemCanvas taskData={dynamicTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
-                default:
-                  return null;
-              }
-            })()}
-          </>
-        )}
-      </main>
-        {activeIndex !== null && (
-          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-auto bg-black/20 backdrop-blur-sm rounded-2xl px-4 py-2 border border-zinc-800/40 shadow-2xl animate-fade-in">
-            <GooeyNav 
-              items={currentGooeyItems}
-              onChange={(selectedLabel: string) => {
-                playDifficultyClick();
-                const selectedIndex = currentGooeyItems.indexOf(selectedLabel);
-                if (selectedIndex !== -1) {
-                  setDifficulty(difficultyKeys[selectedIndex]);
-                } 
-              }}
-            />
+        {!isMobile && (
+          <div className="pointer-events-auto mt-1">
+            <LanguageToggle onChange={handleLanguageChange} />
           </div>
         )}
+      </div>
+
+      <main className="relative z-10 flex-1 flex flex-col items-center w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 text-center animate-fade-in pb-40 pt-8">
+        
+        <div className="w-full my-auto flex flex-col items-center">
+          {activeIndex !== null && (
+            <>
+              {activeIndex !== 1 && activeIndex !== 2 && (
+                <h1 className={cn("text-xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-6 lg:mb-10 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
+                  {displayTitle()}
+                </h1>
+              )}
+
+              <div className="w-full">
+                {(() => {
+                  switch (activeIndex) {
+                    case 0:
+                      return (
+                        <div className={inter.className}>
+                          <div className="w-full max-w-4xl mx-auto bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 md:p-8 lg:p-10 shadow-xl backdrop-blur-md transition-all duration-300 animate-fade-in text-left">
+                            <p className="text-zinc-300 text-base md:text-lg lg:text-xl leading-relaxed font-light tracking-wide">
+                              {dynamicProblemText}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    case 1:
+                      return dragDropTask ? <DragDropCanvas taskData={dragDropTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
+                    case 2:
+                      return bilingualTask ? (
+                        <BilingualHighlighter taskData={bilingualTask} currentLanguage={currentLanguage} />
+                      ) : (
+                        <div className="text-zinc-500 py-10">Data not available</div>
+                      );
+                    case 3:
+                      return dynamicTask ? <DynamicProblemCanvas taskData={dynamicTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
+                    default:
+                      return null;
+                  }
+                })()}
+              </div>
+            </>
+          )}
+        </div>
+      </main>
+
+      {activeIndex !== null && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-auto bg-black/20 backdrop-blur-sm rounded-2xl px-4 py-2 border border-zinc-800/40 shadow-2xl animate-fade-in">
+          <GooeyNav 
+            items={currentGooeyItems}
+            onChange={(selectedLabel: string) => {
+              playDifficultyClick();
+              const selectedIndex = currentGooeyItems.indexOf(selectedLabel);
+              if (selectedIndex !== -1) {
+                setDifficulty(difficultyKeys[selectedIndex]);
+              } 
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

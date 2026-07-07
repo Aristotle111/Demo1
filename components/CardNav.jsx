@@ -19,7 +19,9 @@ const CardNav = ({
   buttonBgColor,
   buttonTextColor,
   defaultOpen,
-  onItemClick
+  onItemClick,
+  isMobile,
+  mobileActionComponent = null
 }) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(defaultOpen);
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
@@ -40,33 +42,8 @@ const CardNav = ({
     const navEl = navRef.current;
     if (!navEl) return 260;
 
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
     if (isMobile) {
-      const contentEl = navEl.querySelector('.card-nav-content');
-      if (contentEl) {
-        const wasVisible = contentEl.style.visibility;
-        const wasPointerEvents = contentEl.style.pointerEvents;
-        const wasPosition = contentEl.style.position;
-        const wasHeight = contentEl.style.height;
-
-        contentEl.style.visibility = 'visible';
-        contentEl.style.pointerEvents = 'auto';
-        contentEl.style.position = 'static';
-        contentEl.style.height = 'auto';
-
-        contentEl.offsetHeight;
-
-        const topBar = 60;
-        const padding = 16;
-        const contentHeight = contentEl.scrollHeight;
-
-        contentEl.style.visibility = wasVisible;
-        contentEl.style.pointerEvents = wasPointerEvents;
-        contentEl.style.position = wasPosition;
-        contentEl.style.height = wasHeight;
-
-        return topBar + contentHeight + padding;
-      }
+      return window.innerHeight * 0.90;
     }
     return 260;
   };
@@ -102,7 +79,7 @@ const CardNav = ({
     if (defaultOpen && tl) {
       setIsHamburgerOpen(true);
       setIsExpanded(true);
-      tl.play();
+      tl.progress(1);
       playMenuOpen();
     }
 
@@ -110,9 +87,10 @@ const CardNav = ({
       tl?.kill();
       tlRef.current = null;
     };
-  }, [ease, defaultOpen, playMenuOpen]);
+  }, [defaultOpen, isMobile]); 
 
   const lastWidthRef = useRef(typeof window !== 'undefined' ? window.innerWidth : 0);
+  
   useLayoutEffect(() => {
     const handleResize = () => {
       if (!tlRef.current) return;
@@ -124,7 +102,6 @@ const CardNav = ({
       if (isExpandedRef.current) {
         const newHeight = calculateHeight();
         gsap.set(navRef.current, { height: newHeight });
-
         tlRef.current.kill();
         const newTl = createTimeline();
         if (newTl) {
@@ -134,15 +111,13 @@ const CardNav = ({
       } else {
         tlRef.current.kill();
         const newTl = createTimeline();
-        if (newTl) {
-          tlRef.current = newTl;
-        }
+        if (newTl) tlRef.current = newTl;
       }
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isMobile]);
 
   const toggleMenu = () => {
     const tl = tlRef.current;
@@ -176,9 +151,9 @@ const CardNav = ({
   };
 
   return (
-    <div className={`card-nav-container ${className}`}>
+    <div className={`card-nav-container ${className} ${isMobile ? 'w-full' : ''}`}>
       <nav ref={navRef} className={`card-nav ${isHamburgerOpen ? 'open' : ''}`} style={{ backgroundColor: baseColor }}>
-        <div className="card-nav-top">
+        <div className={`card-nav-top flex items-center justify-between ${isMobile ? 'w-full' : ''}`}>
           <div
             className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
             onClick={toggleMenu}
@@ -195,14 +170,21 @@ const CardNav = ({
             <span className="logo-text">{logoAlt}</span>
           </div>
 
-          <Link
-            href="/"
-            className="card-nav-cta-button"
-            style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
-            onClick={() => playHomeClick()}
-          >
-            {homeLabel}
-          </Link>
+          {/* Conditional Rendering for Mobile vs Desktop Action Button */}
+          {isMobile ? (
+            <div className="mobile-action-container pr-2">
+              {mobileActionComponent}
+            </div>
+          ) : (
+            <Link
+              href="/"
+              className="card-nav-cta-button"
+              style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
+              onClick={() => playHomeClick()}
+            >
+              {homeLabel}
+            </Link>
+          )}
         </div>
 
         <div className="card-nav-content" aria-hidden={!isExpanded}>
