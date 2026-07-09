@@ -7,6 +7,7 @@ import useSound from 'use-sound';
 const inter = Inter({ subsets: ['latin'] });
 
 export interface BilingualTask {
+  title?: Record<"EN" | "FR", string>;
   sentences: {
     EN: string[];
     FR: string[];

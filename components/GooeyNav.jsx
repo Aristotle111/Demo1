@@ -143,12 +143,17 @@ const GooeyNav = ({
     }
   };
 
-  useEffect(() => {
-    if (!navRef.current || !containerRef.current) return;
+useEffect(() => {
+    if (!navRef.current || !containerRef.current || !textRef.current) return;
+    
     const activeLi = navRef.current.querySelectorAll('li')[activeIndex];
+    
     if (activeLi) {
+      textRef.current.innerText = activeLi.innerText;
+      
       updateEffectPosition(activeLi);
-      textRef.current?.classList.add('active');
+      
+      textRef.current.classList.add('active');
     }
 
     const resizeObserver = new ResizeObserver(() => {

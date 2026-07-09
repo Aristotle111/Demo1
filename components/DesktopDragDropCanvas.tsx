@@ -7,6 +7,7 @@ import useSound from 'use-sound';
 const inter = Inter({ subsets: ['latin'] });
 
 export interface DragDropTask {
+  title?: Record<"EN" | "FR", string>;
   prompt: string;
   options: string[];
   correctOrder: string[];

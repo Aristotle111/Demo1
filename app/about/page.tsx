@@ -53,11 +53,14 @@ const App = () => {
   const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.55 });
   const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.65 });
 
+  interface ScenarioTask {
+    title?: Record<Language, string>;
+    text: Record<Language, string>;
+  }
+
   interface ContentItem {
-    title: Record<Language, string>;
-    beginner: Record<Language, string>;
-    intermediate: Record<Language, string>;
-    advanced: Record<Language, string>;
+    title?: Record<Language, string>;
+    scenarioData: Record<Difficulty, ScenarioTask>;
     dragDropData?: Record<Difficulty, Record<Language, DragDropTask>>;
     dynamicProblemData?: Record<Difficulty, Record<Language, DynamicProblemTask>>;
     bilingualReadingData?: Record<Difficulty, BilingualTask>;
@@ -65,10 +68,30 @@ const App = () => {
 
   const [problems, setProblems] = useState<ContentItem[]>([
     {
-      title: { EN: "Binomial Probability Problem", FR: "Problème de Probabilité Binomiale" },
-      beginner: { EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior.  Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.", FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?" },
-      intermediate: { EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.", FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence." },
-      advanced: { EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.", FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?" },
+      title: { 
+        EN: "Binomial Probability Problem", 
+        FR: "Problème de Probabilité Binomiale" 
+      },
+      scenarioData: {
+        beginner: {
+          text: { 
+            EN: "In a behavioral ecology study, a sample of eight foxes are subjected to a conditioning protocol hypothesized to yield a 60% success rate in eliciting a target behavior. Assuming independence between trials, determine the probability that at least half of the eight foxes exhibit the conditioned response.", 
+            FR: "Dans une étude d'écologie comportementale, un échantillon de huit renards est soumis à un protocole de conditionnement censé produire un comportement cible dans 60 % des cas. En supposant l'indépendance des essais, quelle est la probabilité qu'au moins la moitié des huit renards présentent la réponse conditionnée?" 
+          }
+        },
+        intermediate: {
+          text: { 
+            EN: "In a clinical trial evaluating a new allergy medication, a focus group of twelve patients is monitored for adverse side effects. Historical data suggests the probability of a patient experiencing mild drowsiness under this formulation is exactly 25%. Assuming each patient's physiological reaction is independent, calculate the probability that fewer than four individuals in this sample group report experiencing drowsiness.", 
+            FR: "Dans un essai clinique évaluant un nouveau médicament contre les allergies, un groupe de douze patients est suivi afin de détecter d'éventuels effets indésirables. Les données historiques suggèrent que la probabilité qu'un patient ressente une légère somnolence avec cette formulation est exactement de 25 %. En supposant que la réaction physiologique de chaque patient est indépendante, calculez la probabilité que moins de quatre individus de ce groupe rapportent une somnolence." 
+          }
+        },
+        advanced: {
+          text: { 
+            EN: "An automated manufacturing line produces microchips with a known, stable defect rate of 5%. A quality control inspector randomly selects a batch of twenty microchips from the morning production run for rigorous stress testing. Under the assumption that the structural integrity of each chip is independent of the others, find the probability that the batch contains more than two defective units.", 
+            FR: "Une ligne de production automatisée fabrique des microprocesseurs dont le taux de défauts est connu et stable à 5 %. Un contrôleur qualité prélève aléatoirement un lot de vingt microprocesseurs issus de la production du matin pour des tests de résistance rigoureux. En supposant que l'intégrité structurelle de chaque puce est indépendante des autres, quelle est la probabilité que le lot contienne plus de deux unités défectueuses ?" 
+          }
+        }
+      },
       bilingualReadingData: {
         beginner: {
           sentences: {
@@ -172,7 +195,6 @@ const App = () => {
       dynamicProblemData: {
         beginner: {
           EN: {
-            title: "Rodent Thermoregulation",
             textStart: "A team of researchers is studying wild rodents. The average temperature is 38.5°C. What is the probability that a randomly selected rodent has a temperature",
             textEnd: "°C?",
             defaultNumber: 39.2,
@@ -186,7 +208,6 @@ const App = () => {
             }
           },
           FR: {
-            title: "Thermorégulation Chez les Rongeurs",
             textStart: "Une équipe de chercheurs étudie des rongeurs sauvages. La température moyenne est de 38,5°C. Quelle est la probabilité qu'un rongeur sélectionné au hasard ait une température",
             textEnd: "°C ?",
             defaultNumber: 39.2,
@@ -202,7 +223,6 @@ const App = () => {
         },
         intermediate: {
           EN: {
-            title: "Rodent Thermoregulation",
             textStart: "The body temperature of wild rodents follows a normal distribution with a mean of 38.5°C and a standard deviation of 0.7°C. What is the probability that a randomly selected rodent has a temperature",
             textEnd: "°C?",
             defaultNumber: 39.2,
@@ -216,7 +236,6 @@ const App = () => {
             }
           },
           FR: {
-            title: "Thermorégulation Chez les Rongeurs",
             textStart: "La température corporelle des rongeurs sauvages suit une distribution normale avec une moyenne de 38,5°C et un écart-type de 0,7°C. Quelle est la probabilité qu'un rongeur sélectionné au hasard ait une température",
             textEnd: "°C ?",
             defaultNumber: 39.2,
@@ -232,7 +251,6 @@ const App = () => {
         },
         advanced: {
           EN: {
-            title: "Rodent Thermoregulation",
             textStart: "Within a population of wild rodents, core body temperature is modeled by a normal distribution with parameters μ = 38.5°C and σ = 0.7°C. Determine the probability that a randomly selected individual exhibits a temperature",
             textEnd: "°C?",
             defaultNumber: 39.2,
@@ -246,7 +264,6 @@ const App = () => {
             }
           },
           FR: {
-            title: "Thermorégulation Chez les Rongeurs",
             textStart: "Au sein d'une population de rongeurs sauvages, la température corporelle centrale est modélisée par une distribution normale avec les paramètres μ = 38,5°C et σ = 0,7°C. Déterminez la probabilité qu'un individu sélectionné au hasard présente une température",
             textEnd: "°C ?",
             defaultNumber: 39.2,
@@ -264,22 +281,14 @@ const App = () => {
     },
   ]);
 
-  //function for problem generator
-  const generateNewProblem = () => {
-
-    //CALL GENERATED PROBLEMS HERE <-------------------------------------------------------------
-
-    //placeholder
-    const newlyGeneratedProblem: ContentItem = {
-      title: {EN: '', FR: ''},
-      beginner: {EN: '', FR: ''},
-      intermediate: {EN: '', FR: ''},
-      advanced: {EN: '', FR: ''},
-    };
-
-    //Update the state
-    setProblems((prevProblems) => [...prevProblems, newlyGeneratedProblem]);
+  //===========================================================================================================================================
+  // put the problem generation logic here (problems should be generated using the structure from the `ContentItem` interface right above this)
+  const generateNewProblem = async (topicPrompt: string) => { 
+    //Remove this after implementation (this just prevents excecution)
+    console.log(`Ready to generate AI problem for: ${topicPrompt}`);
+    return; 
   };
+  //===========================================================================================================================================
 
   const handleLanguageChange = (selectedLang : Language) => {
     playLanguageClick();
@@ -287,14 +296,39 @@ const App = () => {
   };
 
   const displayTitle = () => {
-    if (activeIndex === 3 && dynamicTask) {
-      return dynamicTask.title;
+    if (!currentProblem) return null;
+
+    //========================================================================================================================
+    //please delete this piece of code after AI implementation, its just forcing interfaces 2 and 3 to not have titles for now
+    if (activeIndex === 1 || activeIndex === 2) {
+      return null;
     }
-    return currentProblem?.title[currentLanguage]; 
+    //========================================================================================================================
+
+    let specificTabTitle = undefined;
+
+    switch (activeIndex) {
+      case 0:
+        specificTabTitle = currentProblem.scenarioData[difficulty].title;
+        break;
+      case 1:
+        specificTabTitle = dragDropTask?.title;
+        break;
+      case 2:
+        specificTabTitle = bilingualTask?.title;
+        break;
+      case 3:
+        specificTabTitle = dynamicTask?.title;
+        break;
+    }
+    const localizedSpecificTitle = specificTabTitle?.[currentLanguage];
+    const localizedMainTitle = currentProblem.title?.[currentLanguage];
+
+    return localizedSpecificTitle || localizedMainTitle || null;
   };
 
   const currentProblem = problems.length > 0 ? problems[0] : null;
-  const dynamicProblemText = currentProblem ? currentProblem[difficulty][currentLanguage] : "";
+  const dynamicProblemText = currentProblem ? currentProblem.scenarioData[difficulty].text[currentLanguage] : "";
   const currentGooeyItems = difficultyKeys.map(key => difficultyLabels[currentLanguage][key]);
   const dragDropTask = currentProblem?.dragDropData ? currentProblem.dragDropData[difficulty][currentLanguage] : null;
   const dynamicTask = currentProblem?.dynamicProblemData ? currentProblem.dynamicProblemData[difficulty][currentLanguage] : null;
@@ -339,8 +373,8 @@ const App = () => {
           <div className="mt-20 lg:mt-24" />
           {activeIndex !== null && (
             <>
-              {activeIndex !== 1 && activeIndex !== 2 && (
-                <h1 className={cn("text-xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-6 lg:mb-10 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
+              {displayTitle() && (
+                <h1 className={cn("text-xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-3 lg:mb-4 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
                   {displayTitle()}
                 </h1>
               )}

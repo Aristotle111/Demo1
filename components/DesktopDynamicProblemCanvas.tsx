@@ -16,7 +16,7 @@ function normalCDF(z: number): number {
 }
 
 export interface DynamicProblemTask {
-  title: string;
+  title?: Record<"EN" | "FR", string>;
   textStart: string;
   textEnd: string;
   defaultNumber: number;
