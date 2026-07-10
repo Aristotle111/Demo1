@@ -21,6 +21,7 @@ export interface BilingualTask {
 interface BilingualHighlighterProps {
   taskData: BilingualTask;
   currentLanguage: "EN" | "FR";
+  onExpandChange?: (isExpanded: boolean) => void;
 }
 
 const uiText = {
@@ -35,7 +36,7 @@ const highlightColors = [
   "text-[#bbffbf] bg-[#bbffbf]/10 border-[#bbffbf]/20", 
 ];
 
-export default function BilingualHighlighter({ taskData, currentLanguage }: BilingualHighlighterProps) {
+export default function BilingualHighlighter({ taskData, currentLanguage, onExpandChange }: BilingualHighlighterProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -49,12 +50,19 @@ export default function BilingualHighlighter({ taskData, currentLanguage }: Bili
   }, [taskData]);
 
   const handleToggleExpand = () => {
-    if (isExpanded) {
-      playCloseTranslation();
-    } else {
+    const newState = !isExpanded; 
+    
+    if (newState) {
       playOpenTranslation();
+    } else {
+      playCloseTranslation();
     }
-    setIsExpanded(!isExpanded);
+    
+    setIsExpanded(newState);
+    
+    if (onExpandChange) {
+      onExpandChange(newState);
+    }
   };
 
   const handleToggleSolution = () => {

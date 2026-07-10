@@ -53,6 +53,118 @@ const App = () => {
   const [playLanguageClick] = useSound('/sounds/language_click.mp3', { volume: 0.55 });
   const [playDifficultyClick] = useSound('/sounds/difficulty_Click.mp3', { volume: 0.65 });
 
+  const [isBilingualExpanded, setIsBilingualExpanded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    const loadVoices = () => {
+      setVoices(window.speechSynthesis.getVoices());
+    };
+
+    loadVoices();
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+  }, [activeIndex, currentLanguage, difficulty]);
+
+  const getReadableChunks = (): { text: string, lang: Language }[] => {
+    if (!currentProblem) return [];
+    
+    switch (activeIndex) {
+      case 0: 
+        return [{ text: currentProblem.scenarioData[difficulty].text[currentLanguage], lang: currentLanguage }];
+      case 1: 
+        return [{ text: dragDropTask?.prompt || "", lang: currentLanguage }];
+      case 2: 
+        const chunks = [{ 
+          text: bilingualTask?.sentences[currentLanguage].join(". ") || "", 
+          lang: currentLanguage 
+        }];
+        
+        if (isBilingualExpanded) {
+          const oppositeLanguage = currentLanguage === "EN" ? "FR" : "EN";
+          chunks.push({ 
+            text: bilingualTask?.sentences[oppositeLanguage].join(". ") || "", 
+            lang: oppositeLanguage 
+          });
+        }
+        return chunks;
+      case 3: 
+        return dynamicTask ? [{ text: `${dynamicTask.textStart} ${dynamicTask.defaultNumber} ${dynamicTask.textEnd}`, lang: currentLanguage }] : [];
+      default:
+        return [];
+    }
+  };
+
+  const handleSpeak = () => {
+    if (!('speechSynthesis' in window)) {
+      alert(currentLanguage === "EN" ? "Your browser does not support text-to-speech." : "Votre navigateur ne supporte pas la synthèse vocale.");
+      return;
+    }
+
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+
+    const chunks = getReadableChunks();
+    if (chunks.length === 0 || !chunks[0].text) return;
+
+    let availableVoices = voices;
+    if (availableVoices.length === 0) {
+      availableVoices = window.speechSynthesis.getVoices();
+    }
+
+    const playNextChunk = (index: number) => {
+      if (index >= chunks.length) {
+        setIsPlaying(false);
+        return;
+      }
+
+      const chunk = chunks[index];
+      const utterance = new SpeechSynthesisUtterance(chunk.text);
+      utterance.lang = chunk.lang === "FR" ? "fr-FR" : "en-US";
+      
+      const matchingVoice = availableVoices.find(voice => {
+        const voiceLang = voice.lang.toLowerCase();
+        const voiceName = voice.name.toLowerCase();
+        if (chunk.lang === "FR") {
+          return voiceLang.startsWith('fr') || voiceName.includes('français') || voiceName.includes('french');
+        } else {
+          return voiceLang.startsWith('en') || voiceName.includes('english');
+        }
+      });
+
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      } else {
+        alert("Votre appareil n'a pas de voix française installée pour la lecture. Veuillez vérifier les paramètres de votre système.");
+        setIsPlaying(false);
+        return;
+      }
+
+      utterance.onend = () => playNextChunk(index + 1);
+      utterance.onerror = () => setIsPlaying(false);
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    setIsPlaying(true);
+    playNextChunk(0);
+  };
+
   interface ScenarioTask {
     title?: Record<Language, string>;
     text: Record<Language, string>;
@@ -284,8 +396,6 @@ const App = () => {
   //===========================================================================================================================================
   // put the problem generation logic here (problems should be generated using the structure from the `ContentItem` interface right above this)
   const generateNewProblem = async (topicPrompt: string) => { 
-    //Remove this after implementation (this just prevents excecution)
-    console.log(`Ready to generate AI problem for: ${topicPrompt}`);
     return; 
   };
   //===========================================================================================================================================
@@ -297,13 +407,6 @@ const App = () => {
 
   const displayTitle = () => {
     if (!currentProblem) return null;
-
-    //========================================================================================================================
-    //please delete this piece of code after AI implementation, its just forcing interfaces 2 and 3 to not have titles for now
-    if (activeIndex === 1 || activeIndex === 2) {
-      return null;
-    }
-    //========================================================================================================================
 
     let specificTabTitle = undefined;
 
@@ -379,7 +482,26 @@ const App = () => {
                 </h1>
               )}
 
-              <div className="w-full">
+              <div className="w-full relative max-w-4xl mx-auto">
+                
+                {/* Speaker Button */}
+                <button
+                  onClick={handleSpeak}
+                  className="absolute -top-12 right-0 md:-top-14 md:right-2 z-50 p-2.5 rounded-full bg-zinc-900/60 border border-zinc-800 hover:bg-zinc-800 transition-all duration-300 shadow-lg backdrop-blur-md text-zinc-300 hover:text-white group"
+                  aria-label="Read problem aloud"
+                >
+                  {isPlaying ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                  )}
+                </button>
                 {(() => {
                   switch (activeIndex) {
                     case 0:
@@ -396,7 +518,7 @@ const App = () => {
                       return dragDropTask ? <DragDropCanvas taskData={dragDropTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
                     case 2:
                       return bilingualTask ? (
-                        <BilingualHighlighter taskData={bilingualTask} currentLanguage={currentLanguage} />
+                        <BilingualHighlighter taskData={bilingualTask} currentLanguage={currentLanguage} onExpandChange={setIsBilingualExpanded}/>
                       ) : (
                         <div className="text-zinc-500 py-10">Data not available</div>
                       );

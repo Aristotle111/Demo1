@@ -18,9 +18,10 @@ export interface BilingualTask {
 export interface BilingualHighlighterProps {
   taskData: BilingualTask;
   currentLanguage: "EN" | "FR";
+  onExpandChange?: (isExpanded: boolean) => void;
 }
 
-export default function BilingualHighlighter({ taskData, currentLanguage }: BilingualHighlighterProps) {
+export default function BilingualHighlighter({ taskData, currentLanguage, onExpandChange }: BilingualHighlighterProps) {
   const isMobile = useWindowSize();
   const [mounted, setMounted] = useState(false);
 
