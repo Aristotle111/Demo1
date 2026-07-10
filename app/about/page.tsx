@@ -8,9 +8,9 @@ import GridPattern from '@/components/ui/grid-pattern';
 import GooeyNav from '@/components/GooeyNav';
 import { cn } from "@/lib/utils";
 import { Space_Grotesk, Inter } from 'next/font/google';
-import DragDropCanvas, { DragDropTask } from '@/components/DesktopDragDropCanvas';
-import DynamicProblemCanvas, { DynamicProblemTask } from '@/components/DesktopDynamicProblemCanvas';
-import BilingualHighlighter, { BilingualTask } from '@/components/DesktopBilingualHighlighter';
+import DragDropCanvas, { DragDropTask } from '@/components/DragDropCanvas';
+import DynamicProblemCanvas, { DynamicProblemTask } from '@/components/DynamicProblemCanvas';
+import BilingualHighlighter, { BilingualTask } from '@/components/BilingualHighlighter';
 import useSound from 'use-sound';
 import { useWindowSize } from "@/lib/useWindowSize";
 
