@@ -55,8 +55,28 @@ const App = () => {
 
   const [isBilingualExpanded, setIsBilingualExpanded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showAudioOptions, setShowAudioOptions] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const playbackRateRef = useRef(1);
   const [currentDynamicText, setCurrentDynamicText] = useState<string | null>(null);
+
+  const stopPlayback = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    setIsPlaying(false);
+    setIsPaused(false);
+    setShowAudioOptions(false);
+  };
+
+  useEffect(() => {
+    stopPlayback();
+    setCurrentDynamicText(null);
+  }, [activeIndex, currentLanguage, difficulty]);
 
   useEffect(() => {
     if (currentAudioRef.current) {
@@ -102,13 +122,17 @@ const App = () => {
     }
   };
 
-  const handleSpeak = async () => {
+  const handlePlayPause = async () => {
     if (isPlaying) {
       if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-        currentAudioRef.current = null;
+        if (isPaused) {
+          currentAudioRef.current.play();
+          setIsPaused(false);
+        } else {
+          currentAudioRef.current.pause();
+          setIsPaused(true);
+        }
       }
-      setIsPlaying(false);
       return;
     }
 
@@ -116,6 +140,7 @@ const App = () => {
     if (chunks.length === 0 || !chunks[0].text) return;
 
     setIsPlaying(true);
+    setIsPaused(false);
 
     const playNextChunk = async (index: number) => {
       if (index >= chunks.length) {
@@ -145,22 +170,40 @@ const App = () => {
         
         const audio = new Audio(audioUrl);
         currentAudioRef.current = audio;
+        
+        audio.playbackRate = playbackRateRef.current;
 
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
           playNextChunk(index + 1);
         };
         
-        audio.onerror = () => setIsPlaying(false);
+        audio.onerror = () => stopPlayback();
 
         await audio.play();
       } catch (error) {
         console.error("Audio playback error:", error);
-        setIsPlaying(false);
+        stopPlayback();
       }
     };
 
     playNextChunk(0);
+  };
+
+  const handleRewind = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.currentTime = Math.max(0, currentAudioRef.current.currentTime - 5);
+    }
+  };
+
+  const toggleSpeed = () => {
+    const nextRate = playbackRate === 1 ? 1.25 : playbackRate === 1.25 ? 1.5 : playbackRate === 1.5 ? 0.75 : 1;
+    setPlaybackRate(nextRate);
+    playbackRateRef.current = nextRate;
+    
+    if (currentAudioRef.current) {
+      currentAudioRef.current.playbackRate = nextRate;
+    }
   };
 
   interface ScenarioTask {
@@ -473,33 +516,83 @@ const App = () => {
         <div className="w-full flex-grow flex flex-col items-center justify-center">
           <div className="mt-20 lg:mt-24" />
           {activeIndex !== null && (
-            <>
+            <div className="w-full max-w-5xl mx-auto">
+              
               {displayTitle() && (
-                <h1 className={cn("text-xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-3 lg:mb-4 bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
-                  {displayTitle()}
-                </h1>
+                /* 1. This wrapper shrink-wraps the title so the controls stick to it */
+                <div className="relative inline-flex items-center justify-center mx-auto mb-8 lg:mb-10">
+                  
+                  <h1 className={cn("text-xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
+                    {displayTitle()}
+                  </h1>
+
+                  {/* 2. AUDIO CONTROLS (Now dynamically pinned right next to the text) */}
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-11 md:ml-18 z-50 flex items-center gap-2 whitespace-nowrap">
+                    
+                    {/* Options Menu Dropdown */}
+                    {showAudioOptions && (
+                      <div className="absolute top-12 right-0 bg-zinc-900/95 border border-zinc-700/50 rounded-xl p-1.5 shadow-2xl backdrop-blur-md flex flex-col gap-1 min-w-[160px] animate-fade-in z-50">
+                        <button onClick={handleRewind} className="flex items-center gap-3 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors text-left">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="11 19 2 12 11 5 11 19"></polygon>
+                            <polygon points="22 19 13 12 22 5 22 19"></polygon>
+                          </svg>
+                          Rewind 5s
+                        </button>
+                        
+                        <button onClick={toggleSpeed} className="flex items-center gap-3 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors text-left">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                          </svg>
+                          Speed: {playbackRate}x
+                        </button>
+                        
+                        {isPlaying && (
+                          <>
+                            <div className="h-px w-full bg-zinc-800 my-1"></div>
+                            <button onClick={stopPlayback} className="flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-lg transition-colors text-left">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                              </svg>
+                              Stop Audio
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Main Play/Pause Button */}
+                    <button onClick={handlePlayPause} className="p-2.5 rounded-full bg-zinc-900/60 border border-zinc-800 hover:bg-zinc-800 transition-all duration-300 shadow-lg backdrop-blur-md text-zinc-300 hover:text-white group" aria-label="Play or pause audio">
+                      {isPlaying && !isPaused ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
+                          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                        </svg>
+                      )}
+                    </button>
+
+                    {/* Options Toggle Menu Button */}
+                    <button onClick={() => setShowAudioOptions(!showAudioOptions)} className="p-2.5 rounded-full bg-zinc-900/60 border border-zinc-800 hover:bg-zinc-800 transition-all duration-300 shadow-lg backdrop-blur-md text-zinc-300 hover:text-white group" aria-label="Audio options">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                      </svg>
+                    </button>
+                  </div> {/* End Audio Controls */}
+                  
+                </div>
               )}
 
-              <div className="w-full relative max-w-4xl mx-auto">
-                
-                {/* Speaker Button */}
-                <button
-                  onClick={handleSpeak}
-                  className="absolute -top-12 right-0 md:-top-14 md:right-2 z-50 p-2.5 rounded-full bg-zinc-900/60 border border-zinc-800 hover:bg-zinc-800 transition-all duration-300 shadow-lg backdrop-blur-md text-zinc-300 hover:text-white group"
-                  aria-label="Read problem aloud"
-                >
-                  {isPlaying ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                    </svg>
-                  )}
-                </button>
+              {/* 3. Main Content Rendering */}
+              <div className="w-full">
                 {(() => {
                   switch (activeIndex) {
                     case 0:
@@ -514,33 +607,19 @@ const App = () => {
                       );
                     case 1:
                       return dragDropTask ? (
-                        <DragDropCanvas 
-                          key={`drag-${difficulty}-${currentLanguage}`} 
-                          taskData={dragDropTask} 
-                          language={currentLanguage} 
-                        />
+                        <DragDropCanvas key={`drag-${difficulty}-${currentLanguage}`} taskData={dragDropTask} language={currentLanguage} />
                       ) : (
                         <div className="text-zinc-500 py-10">Data not available</div>
                       );
                     case 2:
                       return bilingualTask ? (
-                        <BilingualHighlighter 
-                          key={`bilingual-${difficulty}-${currentLanguage}`} 
-                          taskData={bilingualTask} 
-                          currentLanguage={currentLanguage} 
-                          onExpandChange={setIsBilingualExpanded}
-                        />
+                        <BilingualHighlighter key={`bilingual-${difficulty}-${currentLanguage}`} taskData={bilingualTask} currentLanguage={currentLanguage} onExpandChange={setIsBilingualExpanded} />
                       ) : (
                         <div className="text-zinc-500 py-10">Data not available</div>
                       );
                     case 3:
                       return dynamicTask ? (
-                        <DynamicProblemCanvas 
-                          key={`dynamic-${difficulty}-${currentLanguage}`} 
-                          taskData={dynamicTask} 
-                          language={currentLanguage} 
-                          onTextChange={(text: string) => setCurrentDynamicText(text)}
-                        />
+                        <DynamicProblemCanvas key={`dynamic-${difficulty}-${currentLanguage}`} taskData={dynamicTask} language={currentLanguage} onTextChange={(text: string) => setCurrentDynamicText(text)} />
                       ) : (
                         <div className="text-zinc-500 py-10">Data not available</div>
                       );
@@ -549,7 +628,7 @@ const App = () => {
                   }
                 })()}
               </div>
-            </>
+            </div>
           )}
         </div>
       </main>
