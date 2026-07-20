@@ -40,6 +40,11 @@ const difficultyLabels = {
   FR: { beginner: "Débutant", intermediate: "Intermédiaire", advanced: "Avancé" }
 };
 
+const unlockAudio = () => {
+  const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
+  silentAudio.play().catch(() => {}); // Silent play to unlock permissions
+};
+
 const difficultyKeys: Difficulty[] = ["beginner", "intermediate", "advanced"];
 
 const App = () => {
@@ -123,6 +128,8 @@ const App = () => {
   };
 
   const handlePlayPause = async () => {
+    unlockAudio();
+
     if (isPlaying) {
       if (currentAudioRef.current) {
         if (isPaused) {
