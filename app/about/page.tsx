@@ -519,18 +519,19 @@ const App = () => {
             <div className="w-full max-w-5xl mx-auto">
               
               {displayTitle() && (
-                /* 1. This wrapper shrink-wraps the title so the controls stick to it */
-                <div className="relative inline-flex items-center justify-center mx-auto mb-8 lg:mb-10">
+                <div className="relative w-full max-w-4xl mx-auto flex justify-start md:justify-center mb-8 lg:mb-10 px-4 md:px-0">
                   
-                  <h1 className={cn("text-xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight bg-clip-text bg-gradient-to-b from-white to-zinc-400", inter.className)}>
+                  {/* TITLE */}
+                  <h1 className={cn("text-xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight bg-clip-text bg-gradient-to-b from-white to-zinc-400 pr-24 md:pr-0", inter.className)}>
                     {displayTitle()}
                   </h1>
-
-                  {/* 2. AUDIO CONTROLS (Now dynamically pinned right next to the text) */}
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-11 md:ml-18 z-50 flex items-center gap-2 whitespace-nowrap">
+                  
+                  {/* CONTROLS */}
+                  <div className="absolute right-4 md:right-0 top-1/2 -translate-y-1/2 z-50 flex items-center gap-2 whitespace-nowrap">
                     
                     {/* Options Menu Dropdown */}
                     {showAudioOptions && (
+                      /* Menu opens inwards from the right edge */
                       <div className="absolute top-12 right-0 bg-zinc-900/95 border border-zinc-700/50 rounded-xl p-1.5 shadow-2xl backdrop-blur-md flex flex-col gap-1 min-w-[160px] animate-fade-in z-50">
                         <button onClick={handleRewind} className="flex items-center gap-3 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors text-left">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
