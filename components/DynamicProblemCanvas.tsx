@@ -33,6 +33,7 @@ export interface DynamicProblemTask {
 interface DynamicProblemCanvasProps {
   taskData: DynamicProblemTask;
   language: "EN" | "FR";
+  onTextChange?: (fullText: string) => void;
 }
 
 const uiText = {
@@ -46,7 +47,7 @@ const uiText = {
 
 type Operator = "less" | "greater" | "between";
 
-export default function DynamicProblemCanvas({ taskData, language }: DynamicProblemCanvasProps) {
+export default function DynamicProblemCanvas({ taskData, language, onTextChange }: DynamicProblemCanvasProps) {
   const [operator, setOperator] = useState<Operator>("greater");
   const [val1, setVal1] = useState<number>(taskData.defaultNumber);
   const [val2, setVal2] = useState<number>(taskData.defaultNumber + taskData.increment);
@@ -59,6 +60,23 @@ export default function DynamicProblemCanvas({ taskData, language }: DynamicProb
     setVal2(taskData.defaultNumber + taskData.increment);
     setShowSolution(false);
   }, [taskData]);
+
+  const fullProblemText = useMemo(() => {
+    const operatorLabel = uiText[operator][language];
+    
+    if (operator === "between") {
+      const andWord = uiText.and[language];
+      return `${taskData.textStart} ${operatorLabel} ${val1} ${andWord} ${val2} ${taskData.textEnd}`.replace(/\s+/g, ' ').trim();
+    }
+    
+    return `${taskData.textStart} ${operatorLabel} ${val1} ${taskData.textEnd}`.replace(/\s+/g, ' ').trim();
+  }, [taskData, operator, val1, val2, language]);
+
+  useEffect(() => {
+    if (onTextChange) {
+      onTextChange(fullProblemText);
+    }
+  }, [fullProblemText, onTextChange]);
 
   const handleToggleSolution = () => {
     if (!showSolution) {
@@ -110,7 +128,7 @@ export default function DynamicProblemCanvas({ taskData, language }: DynamicProb
             type="number"
             step={taskData.increment}
             value={val1}
-            onChange={(e) => setVal1(parseFloat(e.target.value))}
+            onChange={(e) => setVal1(parseFloat(e.target.value) || 0)}
             className="mx-2 my-1 inline-block w-16 lg:w-20 bg-zinc-950/80 border border-zinc-700 text-white text-sm md:text-base rounded-lg px-2 py-1 outline-none text-center focus:border-blue-400 transition-all"
           />
 
@@ -121,7 +139,7 @@ export default function DynamicProblemCanvas({ taskData, language }: DynamicProb
                 type="number"
                 step={taskData.increment}
                 value={val2}
-                onChange={(e) => setVal2(parseFloat(e.target.value))}
+                onChange={(e) => setVal2(parseFloat(e.target.value) || 0)}
                 className="mx-2 my-1 inline-block w-16 lg:w-20 bg-zinc-950/80 border border-zinc-700 text-white text-sm md:text-base rounded-lg px-2 py-1 outline-none text-center focus:border-blue-400 transition-all"
               />
             </>

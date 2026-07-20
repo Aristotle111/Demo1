@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import BorderGlow from "@/components/BorderGlow";
 import FlowingMenu from '@/components/FlowingMenu'
 import CardNav from '@/components/CardNav';
@@ -55,27 +55,16 @@ const App = () => {
 
   const [isBilingualExpanded, setIsBilingualExpanded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentDynamicText, setCurrentDynamicText] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-
-    const loadVoices = () => {
-      setVoices(window.speechSynthesis.getVoices());
-    };
-
-    loadVoices();
-
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    window.speechSynthesis.cancel();
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
     setIsPlaying(false);
+    setCurrentDynamicText(null);
   }, [activeIndex, currentLanguage, difficulty]);
 
   const getReadableChunks = (): { text: string, lang: Language }[] => {
@@ -86,7 +75,7 @@ const App = () => {
         return [{ text: currentProblem.scenarioData[difficulty].text[currentLanguage], lang: currentLanguage }];
       case 1: 
         return [{ text: dragDropTask?.prompt || "", lang: currentLanguage }];
-      case 2: 
+      case 2: {
         const chunks = [{ 
           text: bilingualTask?.sentences[currentLanguage].join(". ") || "", 
           lang: currentLanguage 
@@ -100,21 +89,25 @@ const App = () => {
           });
         }
         return chunks;
+      }
       case 3: 
-        return dynamicTask ? [{ text: `${dynamicTask.textStart} ${dynamicTask.defaultNumber} ${dynamicTask.textEnd}`, lang: currentLanguage }] : [];
+        if (currentDynamicText) {
+          return [{ text: currentDynamicText, lang: currentLanguage }];
+        }
+        return dynamicTask 
+          ? [{ text: `${dynamicTask.textStart} ${dynamicTask.defaultNumber} ${dynamicTask.textEnd}`, lang: currentLanguage }] 
+          : [];
       default:
         return [];
     }
   };
 
-  const handleSpeak = () => {
-    if (!('speechSynthesis' in window)) {
-      alert(currentLanguage === "EN" ? "Your browser does not support text-to-speech." : "Votre navigateur ne supporte pas la synthèse vocale.");
-      return;
-    }
-
+  const handleSpeak = async () => {
     if (isPlaying) {
-      window.speechSynthesis.cancel();
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      }
       setIsPlaying(false);
       return;
     }
@@ -122,46 +115,51 @@ const App = () => {
     const chunks = getReadableChunks();
     if (chunks.length === 0 || !chunks[0].text) return;
 
-    let availableVoices = voices;
-    if (availableVoices.length === 0) {
-      availableVoices = window.speechSynthesis.getVoices();
-    }
+    setIsPlaying(true);
 
-    const playNextChunk = (index: number) => {
+    const playNextChunk = async (index: number) => {
       if (index >= chunks.length) {
         setIsPlaying(false);
         return;
       }
 
       const chunk = chunks[index];
-      const utterance = new SpeechSynthesisUtterance(chunk.text);
-      utterance.lang = chunk.lang === "FR" ? "fr-FR" : "en-US";
       
-      const matchingVoice = availableVoices.find(voice => {
-        const voiceLang = voice.lang.toLowerCase();
-        const voiceName = voice.name.toLowerCase();
-        if (chunk.lang === "FR") {
-          return voiceLang.startsWith('fr') || voiceName.includes('français') || voiceName.includes('french');
-        } else {
-          return voiceLang.startsWith('en') || voiceName.includes('english');
+      try {
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            text: chunk.text, 
+            lang: chunk.lang === "FR" ? "fr-FR" : "en-US" 
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Failed to generate audio (${response.status})`);
         }
-      });
 
-      if (matchingVoice) {
-        utterance.voice = matchingVoice;
-      } else {
-        alert("Votre appareil n'a pas de voix française installée pour la lecture. Veuillez vérifier les paramètres de votre système.");
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        const audio = new Audio(audioUrl);
+        currentAudioRef.current = audio;
+
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          playNextChunk(index + 1);
+        };
+        
+        audio.onerror = () => setIsPlaying(false);
+
+        await audio.play();
+      } catch (error) {
+        console.error("Audio playback error:", error);
         setIsPlaying(false);
-        return;
       }
-
-      utterance.onend = () => playNextChunk(index + 1);
-      utterance.onerror = () => setIsPlaying(false);
-
-      window.speechSynthesis.speak(utterance);
     };
 
-    setIsPlaying(true);
     playNextChunk(0);
   };
 
@@ -515,15 +513,37 @@ const App = () => {
                         </div>
                       );
                     case 1:
-                      return dragDropTask ? <DragDropCanvas taskData={dragDropTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
+                      return dragDropTask ? (
+                        <DragDropCanvas 
+                          key={`drag-${difficulty}-${currentLanguage}`} 
+                          taskData={dragDropTask} 
+                          language={currentLanguage} 
+                        />
+                      ) : (
+                        <div className="text-zinc-500 py-10">Data not available</div>
+                      );
                     case 2:
                       return bilingualTask ? (
-                        <BilingualHighlighter taskData={bilingualTask} currentLanguage={currentLanguage} onExpandChange={setIsBilingualExpanded}/>
+                        <BilingualHighlighter 
+                          key={`bilingual-${difficulty}-${currentLanguage}`} 
+                          taskData={bilingualTask} 
+                          currentLanguage={currentLanguage} 
+                          onExpandChange={setIsBilingualExpanded}
+                        />
                       ) : (
                         <div className="text-zinc-500 py-10">Data not available</div>
                       );
                     case 3:
-                      return dynamicTask ? <DynamicProblemCanvas taskData={dynamicTask} language={currentLanguage} /> : <div className="text-zinc-500 py-10">Data not available</div>;
+                      return dynamicTask ? (
+                        <DynamicProblemCanvas 
+                          key={`dynamic-${difficulty}-${currentLanguage}`} 
+                          taskData={dynamicTask} 
+                          language={currentLanguage} 
+                          onTextChange={(text: string) => setCurrentDynamicText(text)}
+                        />
+                      ) : (
+                        <div className="text-zinc-500 py-10">Data not available</div>
+                      );
                     default:
                       return null;
                   }
