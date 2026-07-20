@@ -42,7 +42,7 @@ const difficultyLabels = {
 
 const unlockAudio = () => {
   const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
-  silentAudio.play().catch(() => {}); // Silent play to unlock permissions
+  silentAudio.play().catch(() => {});
 };
 
 const difficultyKeys: Difficulty[] = ["beginner", "intermediate", "advanced"];
@@ -128,12 +128,10 @@ const App = () => {
   };
 
   const handlePlayPause = async () => {
-    unlockAudio();
-
     if (isPlaying) {
       if (currentAudioRef.current) {
         if (isPaused) {
-          currentAudioRef.current.play();
+          currentAudioRef.current.play().catch(() => {});
           setIsPaused(false);
         } else {
           currentAudioRef.current.pause();
@@ -157,6 +155,17 @@ const App = () => {
 
       const chunk = chunks[index];
       
+      const audio = new Audio();
+      currentAudioRef.current = audio;
+      audio.playbackRate = playbackRateRef.current;
+
+      audio.onended = () => {
+        if (audio.src) URL.revokeObjectURL(audio.src);
+        playNextChunk(index + 1);
+      };
+      
+      audio.onerror = () => stopPlayback();
+
       try {
         const response = await fetch('/api/tts', {
           method: 'POST',
@@ -175,18 +184,7 @@ const App = () => {
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         
-        const audio = new Audio(audioUrl);
-        currentAudioRef.current = audio;
-        
-        audio.playbackRate = playbackRateRef.current;
-
-        audio.onended = () => {
-          URL.revokeObjectURL(audioUrl);
-          playNextChunk(index + 1);
-        };
-        
-        audio.onerror = () => stopPlayback();
-
+        audio.src = audioUrl;
         await audio.play();
       } catch (error) {
         console.error("Audio playback error:", error);
