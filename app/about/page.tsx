@@ -40,11 +40,6 @@ const difficultyLabels = {
   FR: { beginner: "Débutant", intermediate: "Intermédiaire", advanced: "Avancé" }
 };
 
-const unlockAudio = () => {
-  const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
-  silentAudio.play().catch(() => {});
-};
-
 const difficultyKeys: Difficulty[] = ["beginner", "intermediate", "advanced"];
 
 const App = () => {
@@ -64,19 +59,146 @@ const App = () => {
   const [showAudioOptions, setShowAudioOptions] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
 
-  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+  const currentBufferRef = useRef<AudioBuffer | null>(null);
+  const currentChunkIndexRef = useRef<number>(0);
+  const chunksRef = useRef<{ text: string; lang: Language }[]>([]);
+  const startedAtRef = useRef<number>(0);
+  const pausedAtRef = useRef<number>(0);
+
   const playbackRateRef = useRef(1);
   const [currentDynamicText, setCurrentDynamicText] = useState<string | null>(null);
 
   const stopPlayback = () => {
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current.loop = false;
-      currentAudioRef.current.currentTime = 0;
+    if (sourceNodeRef.current) {
+      sourceNodeRef.current.onended = null;
+      sourceNodeRef.current.stop();
+      sourceNodeRef.current.disconnect();
+      sourceNodeRef.current = null;
     }
+    pausedAtRef.current = 0;
+    startedAtRef.current = 0;
     setIsPlaying(false);
     setIsPaused(false);
     setShowAudioOptions(false);
+  };
+
+  const playCurrentBuffer = (offset: number) => {
+    const ctx = audioContextRef.current;
+    const buffer = currentBufferRef.current;
+    if (!ctx || !buffer) return;
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.playbackRate.value = playbackRateRef.current;
+    source.connect(ctx.destination);
+
+    source.onended = () => {
+      currentChunkIndexRef.current += 1;
+      loadAndPlayChunk(currentChunkIndexRef.current);
+    };
+
+    source.start(0, offset);
+    sourceNodeRef.current = source;
+    startedAtRef.current = ctx.currentTime;
+  };
+
+  const loadAndPlayChunk = async (index: number) => {
+    if (index >= chunksRef.current.length) {
+      stopPlayback();
+      return;
+    }
+
+    const chunk = chunksRef.current[index];
+    const langCode = chunk.lang === "FR" ? "fr-FR" : "en-US";
+    const textEncoded = encodeURIComponent(chunk.text);
+
+    try {
+      const response = await fetch(`/api/tts?text=${textEncoded}&lang=${langCode}`);
+      if (!response.ok) throw new Error("TTS failed");
+
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await audioContextRef.current!.decodeAudioData(arrayBuffer);
+
+      currentBufferRef.current = audioBuffer;
+      pausedAtRef.current = 0;
+
+      playCurrentBuffer(0);
+    } catch (error) {
+      console.error("Audio fetch/playback error:", error);
+      stopPlayback();
+    }
+  };
+
+  const handlePlayPause = async () => {
+    if (!audioContextRef.current) {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      audioContextRef.current = new AudioContextClass();
+    }
+
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume();
+    }
+
+    if (isPlaying) {
+      if (isPaused) {
+        playCurrentBuffer(pausedAtRef.current);
+        setIsPaused(false);
+      } else {
+        if (sourceNodeRef.current && audioContextRef.current) {
+          const elapsed = (audioContextRef.current.currentTime - startedAtRef.current) * playbackRateRef.current;
+          pausedAtRef.current += elapsed;
+
+          sourceNodeRef.current.onended = null;
+          sourceNodeRef.current.stop();
+          sourceNodeRef.current.disconnect();
+          sourceNodeRef.current = null;
+        }
+        setIsPaused(true);
+      }
+      return;
+    }
+
+    const chunks = getReadableChunks();
+    if (chunks.length === 0 || !chunks[0].text) return;
+
+    chunksRef.current = chunks;
+    currentChunkIndexRef.current = 0;
+    
+    setIsPlaying(true);
+    setIsPaused(false);
+
+    loadAndPlayChunk(0);
+  };
+
+  const handleRewind = () => {
+    if (!sourceNodeRef.current || !audioContextRef.current) return;
+
+    const elapsed = (audioContextRef.current.currentTime - startedAtRef.current) * playbackRateRef.current + pausedAtRef.current;
+    const newOffset = Math.max(0, elapsed - 5);
+
+    sourceNodeRef.current.onended = null;
+    sourceNodeRef.current.stop();
+
+    pausedAtRef.current = newOffset;
+    if (!isPaused) {
+      playCurrentBuffer(newOffset);
+    }
+  };
+
+  const toggleSpeed = () => {
+    const nextRate = playbackRate === 1 ? 1.25 : playbackRate === 1.25 ? 1.5 : playbackRate === 1.5 ? 0.75 : 1;
+    setPlaybackRate(nextRate);
+    playbackRateRef.current = nextRate;
+
+    if (sourceNodeRef.current && audioContextRef.current) {
+      const elapsed = (audioContextRef.current.currentTime - startedAtRef.current) * sourceNodeRef.current.playbackRate.value;
+      pausedAtRef.current += elapsed;
+      startedAtRef.current = audioContextRef.current.currentTime;
+
+      sourceNodeRef.current.playbackRate.value = nextRate;
+    }
   };
 
   useEffect(() => {
@@ -116,95 +238,6 @@ const App = () => {
           : [];
       default:
         return [];
-    }
-  };
-
-  const handlePlayPause = async() => {
-    const audio = currentAudioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      if (isPaused) {
-        audio.play().catch(() => {});
-        setIsPaused(false);
-      } else {
-        audio.pause();
-        setIsPaused(true);
-      }
-      return;
-    }
-
-    const chunks = getReadableChunks();
-    if (chunks.length === 0 || !chunks[0].text) return;
-
-    audio.onended = null;
-    audio.onerror = null;
-
-    audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-    audio.loop = true; 
-    audio.play().catch(() => {});
-
-    setIsPlaying(true);
-    setIsPaused(false);
-
-    const playNextChunk = async (index: number) => {
-      if (index >= chunks.length) {
-        setIsPlaying(false);
-        audio.loop = false;
-        return;
-      }
-
-      const chunk = chunks[index];
-      const langCode = chunk.lang === "FR" ? "fr-FR" : "en-US";
-      const textEncoded = encodeURIComponent(chunk.text);
-
-      try {
-        const response = await fetch(`/api/tts?text=${textEncoded}&lang=${langCode}`);
-        
-        if (!response.ok) throw new Error("TTS failed");
-
-        const audioBlob = await response.blob();
-        const objectUrl = URL.createObjectURL(audioBlob);
-
-        audio.loop = false;
-        audio.src = objectUrl;
-        audio.playbackRate = playbackRateRef.current;
-
-        audio.onended = () => {
-          URL.revokeObjectURL(objectUrl);
-          playNextChunk(index + 1);
-        };
-        
-        audio.onerror = (e) => {
-          console.error("Playback error:", e);
-          stopPlayback();
-        };
-
-        await audio.play();
-
-      } catch (error) {
-        console.error("Audio fetch/playback error:", error);
-        stopPlayback();
-      }
-    };
-
-    playNextChunk(0);
-  };
-
-
-  const handleRewind = () => {
-    if (currentAudioRef.current) {
-      currentAudioRef.current.currentTime = Math.max(0, currentAudioRef.current.currentTime - 5);
-    }
-  };
-
-  const toggleSpeed = () => {
-    const nextRate = playbackRate === 1 ? 1.25 : playbackRate === 1.25 ? 1.5 : playbackRate === 1.5 ? 0.75 : 1;
-    setPlaybackRate(nextRate);
-    playbackRateRef.current = nextRate;
-    
-    if (currentAudioRef.current) {
-      currentAudioRef.current.playbackRate = nextRate;
     }
   };
 
@@ -650,7 +683,6 @@ const App = () => {
           />
         </div>
       )}
-      <audio ref={currentAudioRef} className="hidden" playsInline />
     </div>
   );
 };
