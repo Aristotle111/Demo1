@@ -201,7 +201,7 @@ const CardNav = ({
           {/* Action Slot */}
           <div className="z-10 flex-shrink-0">
             {isMobile ? (
-              <div className="mobile-action-container pr-2">
+              <div className="mobile-action-container translate-x-2">
                 {mobileActionComponent}
               </div>
             ) : (
