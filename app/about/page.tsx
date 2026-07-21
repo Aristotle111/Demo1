@@ -71,7 +71,7 @@ const App = () => {
   const stopPlayback = () => {
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
-      currentAudioRef.current = null;
+      currentAudioRef.current.currentTime = 0;
     }
     setIsPlaying(false);
     setIsPaused(false);
@@ -80,15 +80,6 @@ const App = () => {
 
   useEffect(() => {
     stopPlayback();
-    setCurrentDynamicText(null);
-  }, [activeIndex, currentLanguage, difficulty]);
-
-  useEffect(() => {
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current = null;
-    }
-    setIsPlaying(false);
     setCurrentDynamicText(null);
   }, [activeIndex, currentLanguage, difficulty]);
 
