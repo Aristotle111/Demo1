@@ -71,6 +71,7 @@ const App = () => {
   const stopPlayback = () => {
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
+      currentAudioRef.current.loop = false;
       currentAudioRef.current.currentTime = 0;
     }
     setIsPlaying(false);
@@ -118,7 +119,7 @@ const App = () => {
     }
   };
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async() => {
     const audio = currentAudioRef.current;
     if (!audio) return;
 
@@ -136,41 +137,60 @@ const App = () => {
     const chunks = getReadableChunks();
     if (chunks.length === 0 || !chunks[0].text) return;
 
+    audio.onended = null;
+    audio.onerror = null;
+
+    audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    audio.loop = true; 
+    audio.play().catch(() => {});
+
     setIsPlaying(true);
     setIsPaused(false);
 
-    const playNextChunk = (index: number) => {
+    const playNextChunk = async (index: number) => {
       if (index >= chunks.length) {
         setIsPlaying(false);
+        audio.loop = false;
         return;
       }
 
       const chunk = chunks[index];
       const langCode = chunk.lang === "FR" ? "fr-FR" : "en-US";
-      
       const textEncoded = encodeURIComponent(chunk.text);
 
-      audio.src = `/api/tts?text=${textEncoded}&lang=${langCode}`;
-      audio.playbackRate = playbackRateRef.current;
+      try {
+        const response = await fetch(`/api/tts?text=${textEncoded}&lang=${langCode}`);
+        
+        if (!response.ok) throw new Error("TTS failed");
 
-      // 2. Attach standard listeners
-      audio.onended = () => {
-        playNextChunk(index + 1);
-      };
-      
-      audio.onerror = (e) => {
-        console.error("Audio playback error:", e);
-        stopPlayback();
-      };
+        const audioBlob = await response.blob();
+        const objectUrl = URL.createObjectURL(audioBlob);
 
-      audio.play().catch((error) => {
-        console.error("Play failed:", error);
+        audio.loop = false;
+        audio.src = objectUrl;
+        audio.playbackRate = playbackRateRef.current;
+
+        audio.onended = () => {
+          URL.revokeObjectURL(objectUrl);
+          playNextChunk(index + 1);
+        };
+        
+        audio.onerror = (e) => {
+          console.error("Playback error:", e);
+          stopPlayback();
+        };
+
+        await audio.play();
+
+      } catch (error) {
+        console.error("Audio fetch/playback error:", error);
         stopPlayback();
-      });
+      }
     };
 
     playNextChunk(0);
   };
+
 
   const handleRewind = () => {
     if (currentAudioRef.current) {
