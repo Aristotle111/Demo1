@@ -144,6 +144,15 @@ const App = () => {
     const chunks = getReadableChunks();
     if (chunks.length === 0 || !chunks[0].text) return;
 
+    if (!currentAudioRef.current) {
+      currentAudioRef.current = new Audio();
+    }
+    
+    const audio = currentAudioRef.current;
+    
+    audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    audio.play().catch(() => {});
+    
     setIsPlaying(true);
     setIsPaused(false);
 
@@ -155,12 +164,12 @@ const App = () => {
 
       const chunk = chunks[index];
       
-      const audio = new Audio();
-      currentAudioRef.current = audio;
       audio.playbackRate = playbackRateRef.current;
 
       audio.onended = () => {
-        if (audio.src) URL.revokeObjectURL(audio.src);
+        if (audio.src && audio.src.startsWith('blob:')) {
+          URL.revokeObjectURL(audio.src);
+        }
         playNextChunk(index + 1);
       };
       
