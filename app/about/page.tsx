@@ -128,15 +128,16 @@ const App = () => {
   };
 
   const handlePlayPause = async () => {
+    const audio = currentAudioRef.current;
+    if (!audio) return;
+
     if (isPlaying) {
-      if (currentAudioRef.current) {
-        if (isPaused) {
-          currentAudioRef.current.play().catch(() => {});
-          setIsPaused(false);
-        } else {
-          currentAudioRef.current.pause();
-          setIsPaused(true);
-        }
+      if (isPaused) {
+        audio.play().catch(() => {});
+        setIsPaused(false);
+      } else {
+        audio.pause();
+        setIsPaused(true);
       }
       return;
     }
@@ -144,12 +145,6 @@ const App = () => {
     const chunks = getReadableChunks();
     if (chunks.length === 0 || !chunks[0].text) return;
 
-    if (!currentAudioRef.current) {
-      currentAudioRef.current = new Audio();
-    }
-    
-    const audio = currentAudioRef.current;
-    
     audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
     audio.play().catch(() => {});
     
@@ -163,8 +158,10 @@ const App = () => {
       }
 
       const chunk = chunks[index];
-      
       audio.playbackRate = playbackRateRef.current;
+
+      audio.onended = null;
+      audio.onerror = null;
 
       audio.onended = () => {
         if (audio.src && audio.src.startsWith('blob:')) {
@@ -173,7 +170,10 @@ const App = () => {
         playNextChunk(index + 1);
       };
       
-      audio.onerror = () => stopPlayback();
+      audio.onerror = (e) => {
+        console.error("Audio element error:", audio.error);
+        stopPlayback();
+      };
 
       try {
         const response = await fetch('/api/tts', {
@@ -662,6 +662,7 @@ const App = () => {
           />
         </div>
       )}
+      <audio ref={currentAudioRef} className="hidden" playsInline />
     </div>
   );
 };
