@@ -64,7 +64,6 @@ function createWavBuffer(samples: Float32Array, sampleRate: number): Buffer {
   const dataSize = samples.length * 2;
   const buffer = Buffer.alloc(44 + dataSize);
 
-  // WAV Header construction
   buffer.write('RIFF', 0);
   buffer.writeUInt32LE(36 + dataSize, 4);
   buffer.write('WAVE', 8);
@@ -79,7 +78,6 @@ function createWavBuffer(samples: Float32Array, sampleRate: number): Buffer {
   buffer.write('data', 36);
   buffer.writeUInt32LE(dataSize, 40);
 
-  // Write PCM audio data
   let offset = 44;
   for (let i = 0; i < samples.length; i++, offset += 2) {
     const s = Math.max(-1, Math.min(1, samples[i]));
@@ -89,9 +87,11 @@ function createWavBuffer(samples: Float32Array, sampleRate: number): Buffer {
   return buffer;
 }
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
-    const { text, lang } = await request.json();
+    const { searchParams } = new URL(request.url);
+    const text = searchParams.get('text');
+    const lang = searchParams.get('lang') || 'en-US';
 
     if (!text) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
@@ -116,6 +116,8 @@ export async function POST(request: Request) {
       headers: {
         'Content-Type': 'audio/wav',
         'Content-Length': wavBuffer.length.toString(),
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': 'no-store'
       },
     });
   } catch (error: any) {

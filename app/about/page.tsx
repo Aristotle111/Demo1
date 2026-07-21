@@ -118,7 +118,7 @@ const App = () => {
     }
   };
 
-  const handlePlayPause = async () => {
+  const handlePlayPause = () => {
     const audio = currentAudioRef.current;
     if (!audio) return;
 
@@ -136,60 +136,37 @@ const App = () => {
     const chunks = getReadableChunks();
     if (chunks.length === 0 || !chunks[0].text) return;
 
-    audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-    audio.play().catch(() => {});
-    
     setIsPlaying(true);
     setIsPaused(false);
 
-    const playNextChunk = async (index: number) => {
+    const playNextChunk = (index: number) => {
       if (index >= chunks.length) {
         setIsPlaying(false);
         return;
       }
 
       const chunk = chunks[index];
+      const langCode = chunk.lang === "FR" ? "fr-FR" : "en-US";
+      
+      const textEncoded = encodeURIComponent(chunk.text);
+
+      audio.src = `/api/tts?text=${textEncoded}&lang=${langCode}`;
       audio.playbackRate = playbackRateRef.current;
 
-      audio.onended = null;
-      audio.onerror = null;
-
+      // 2. Attach standard listeners
       audio.onended = () => {
-        if (audio.src && audio.src.startsWith('blob:')) {
-          URL.revokeObjectURL(audio.src);
-        }
         playNextChunk(index + 1);
       };
       
       audio.onerror = (e) => {
-        console.error("Audio element error:", audio.error);
+        console.error("Audio playback error:", e);
         stopPlayback();
       };
 
-      try {
-        const response = await fetch('/api/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            text: chunk.text, 
-            lang: chunk.lang === "FR" ? "fr-FR" : "en-US" 
-          })
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Failed to generate audio (${response.status})`);
-        }
-
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        audio.src = audioUrl;
-        await audio.play();
-      } catch (error) {
-        console.error("Audio playback error:", error);
+      audio.play().catch((error) => {
+        console.error("Play failed:", error);
         stopPlayback();
-      }
+      });
     };
 
     playNextChunk(0);
